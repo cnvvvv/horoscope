@@ -1,0 +1,14 @@
+import { Config } from '@vercel/speed-insights/next'
+
+const config: Config = {
+  reactStrictMode: true,
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: true,
+    turbotrace: {
+      trace: false
+    }
+  }
+}
+
+export default config
