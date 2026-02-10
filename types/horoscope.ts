@@ -510,6 +510,5 @@ export type {
 export {
   WU_XING_COLORS,
   WU_XING_GRADIENTS,
-  THEME,
-  ShenType
+  THEME
 };
