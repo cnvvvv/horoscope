@@ -12,9 +12,9 @@ import {
 } from 'lucide-react';
 import {
   QimenPan, QimenAnalysis, JiuGong, QimenCategory
-} from '../../types/qimen';
-import { getScoreColor, getScoreDescription } from '../../lib/qimen-score';
-import { QIMEN_TERMS } from '../../lib/qimen-core';
+} from '../../../lib/qimen';
+import { getScoreColor, getScoreDescription } from '../../../lib/qimen-score';
+import { QIMEN_TERMS } from '../../../lib/qimen-core';
 
 export default function QimenResultPage() {
   const searchParams = useSearchParams();
