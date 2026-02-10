@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm install --legacy-peer-deps && npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm install --legacy-peer-deps",
+  "regions": ["hkg1"],
+  "env": {
+    "NODE_VERSION": "18"
+  }
+}
