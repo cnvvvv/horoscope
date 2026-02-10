@@ -7,7 +7,7 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [],
-    unoptimized: 'optimize',
+    unoptimized: false,
     domains: ['horoscope.vercel.app', 'horoscope-cnvvvv.vercel.app']
   }
 }
