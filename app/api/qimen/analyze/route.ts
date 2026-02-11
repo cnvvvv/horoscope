@@ -2,11 +2,11 @@
 // GET /api/qimen/analyze?year=2024&month=1&day=1&hour=0&category=wealth&question=xxx
 
 import { NextRequest, NextResponse } from 'next/server';
-import { paiQimenPan } from '../../../lib/qimen-pai';
-import { QimenCategory, QimenRequest, QimenAnalysis } from '../../../types/qimen';
-import { matchRules, getYongShen } from '../../../lib/qimen-rules-engine';
-import { scoreGong, getBestDirection, getBestTime } from '../../../lib/qimen-score';
-import { generateFullAnalysis, generateSimpleAnalysis } from '../../../lib/qimen-text-generator';
+import { paiQimenPan } from '../../lib/qimen-pai';
+import { QimenCategory, QimenRequest, QimenAnalysis } from '../../types/qimen';
+import { matchRules, getYongShen } from '../../lib/qimen-rules-engine';
+import { scoreGong, getBestDirection, getBestTime } from '../../lib/qimen-score';
+import { generateFullAnalysis, generateSimpleAnalysis } from '../../lib/qimen-text-generator';
 
 export async function GET(req: NextRequest) {
   try {
