@@ -5,17 +5,17 @@
 // 支持二十四节气计算
 
 // 天干常量
-export const HEAVENLY_STEMS = [
+const HEAVENLY_STEMS = [
   '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'
 ] as const;
 
 // 地支常量
-export const EARTHLY_BRANCHES = [
+const EARTHLY_BRANCHES = [
   '子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'
 ] as const;
 
 // 天干地支对应表（用于找地支的天干）
-export const STEM_BRANCH_MAP: Record<string, string> = {
+const STEM_BRANCH_MAP: Record<string, string> = {
   '甲': '子', '乙': '丑', '丙': '寅', '丁': '卯', '戊': '辰', '己': '巳', '庚': '午', '辛': '未', '壬': '酉', '癸': '亥'
 } as const;
 
@@ -228,8 +228,6 @@ export function isTermPassed(year: number, month: number, day: number, termName:
 
 // 导出函数
 export {
-  HEAVENLY_STEMS,
-  EARTHLY_BRANCHES,
   STEM_BRANCH_MAP,
   SOLAR_TERMS,
   CYCLE,

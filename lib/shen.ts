@@ -343,7 +343,7 @@ export interface ShenAnalysis {
 }
 
 // 计算完整的十神体系
-export function calculateShen(bazi: Bazi): ShenAnalysis {
+function calculateShen(bazi: Bazi): ShenAnalysis {
   try {
     const dayShen = calculateDayShen(bazi);
     
