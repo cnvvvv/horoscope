@@ -105,10 +105,10 @@ function getMonthPillar(year: number, month: number, day: number): BaziMonth {
 // 📅 日柱计算
 function getDayPillar(year: number, month: number, day: number): BaziDay {
   // 1. 计算日柱天干
-  const dayStem = HEAVENLY_STEMS[(year - 4) * 12 + month - 1 + day - 1) % 10;
+  const dayStem = HEAVENLY_STEMS[((year - 4) * 12 + month - 1 + day - 1) % 10];
 
   // 2. 计算日柱地支
-  const dayBranch = EARTHLY_BRANCHES[(year - 4) * 12 + month - 1 + day - 1] % 12;
+  const dayBranch = EARTHLY_BRANCHES[((year - 4) * 12 + month - 1 + day - 1) % 12];
 
   // 3. 获取藏干（主气）
   const hiddenStem = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenHeavenlyStem || null;
@@ -183,7 +183,7 @@ function getYearPillar(year: number): BaziYear {
 }
 
 // 🧪 完整八字排盘函数
-export function calculateBazi(birthDate: Date, birthHour: number, gender: 'male' | 'female', type: 'lunar' | 'solar' = 'solar'): Bazi | null {
+function calculateBazi(birthDate: Date, birthHour: number, gender: 'male' | 'female', type: 'lunar' | 'solar' = 'solar'): Bazi | null {
   try {
     // 1. 提取日期信息
     const year = birthDate.getFullYear();

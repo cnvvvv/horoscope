@@ -5,7 +5,7 @@
 import { Bazi, BaziDay, BaziMonth, BaziYear, BaziHour } from './bazi';
 
 // 十神类型定义
-export enum ShenType {
+enum ShenType {
   ZHENG_CAI = '正财',           // 偏官之财星，主财源
   PIAN_CAI = '偏财',           // 副财星，非主财源
   QI_SHA = '七杀',             // 约束日主，影响事业运
@@ -15,10 +15,10 @@ export enum ShenType {
   SHANG_GUAN = '伤官',         // 挫折和克制
   SHI_SHEN = '食神',           // 主智思和学习
   BI_JIAN = '比肩',           // 同类竞争
-  JIE_CAI = '劫财'            // 财星被克，破财
+  JIE_CAI = '劫财',          // 财星被克，破财
   WU_CAI = '无财',           // 日主没有财星
   WU_GUAN = '无官',           // 日主没有官星
-  WU_YIN = '无印',            // 日主没有印星
+  WU_YIN = '无印'             // 日主没有印星
 }
 
 // 十神详细定义

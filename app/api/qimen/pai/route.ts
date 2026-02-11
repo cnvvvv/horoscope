@@ -2,7 +2,7 @@
 // GET /api/qimen/pai?year=2024&month=1&day=1&hour=0
 
 import { NextRequest, NextResponse } from 'next/server';
-import { paiQimenPan } from '../../../lib/qimen-pai';
+import { paiQimenPan } from '@/lib/qimen-pai';
 
 export async function GET(req: NextRequest) {
   try {

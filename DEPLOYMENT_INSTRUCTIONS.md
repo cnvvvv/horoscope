@@ -1,12 +1,44 @@
-# 自动部署到Vercel - 配置说明
+# 部署说明
 
-## 已完成 ✅
+## 📋 项目状态
+- ✅ 代码已优化完成
+- ✅ 构建问题已修复
+- ✅ 项目结构已重组
+- ✅ GitHub Actions 配置完成
+- ⏳ 等待推送到 GitHub
+- ⏳ 等待 Vercel 自动部署
 
-1. ✅ 创建GitHub Actions工作流文件
-2. ✅ 配置自动部署触发器（push到main分支时自动部署）
-3. ✅ 代码已推送到GitHub
+## 🔧 已完成的优化
 
-## 需要配置 🔧
+### 1. 代码优化
+- 修复了 `types/horoscope.ts` 中的重复导出错误
+- 修复了 API 路径引用错误（`app/api/qimen/analyze/route.ts`）
+- 优化了 `next.config.js` 配置
+- 添加了 `turbo.json` 解决 Turbopack 配置问题
+
+### 2. 项目结构重组
+- 恢复了 App Router 架构
+- 清理了重复文件和目录
+- 创建了 `.nextignore` 文件
+
+## 🚀 部署步骤
+
+### 1. 推送到 GitHub
+```bash
+git push origin main
+```
+
+### 2. Vercel 自动部署
+- GitHub Actions 配置完成
+- 推送到 main 分支后自动触发部署
+- 部署配置：
+  - 区域：hkg1（香港）
+  - Node.js 版本：18
+  - 构建命令：`npm install --legacy-peer-deps && npm run build`
+
+### 3. 验证部署
+- 访问：https://horoscope.vercel.app
+- 检查所有功能是否正常
 
 ### 步骤1：获取Vercel Token
 

@@ -151,13 +151,13 @@ function getBalanceLevel(strength: number): string {
 
 // 📊 分析五行关系
 function analyzeInteractions(bazi: Bazi): {
-  interactions = {
-    generated: [] as string[],
-    克制: [] as string[],
-    冲克: [] as string[],
-    三会: [] as string[],
-    三害: [] as string[],
-    六合: [] as string[]
+  interactions: {
+    generated: string[];
+    克制: string[];
+    冲克: string[];
+    三会: string[];
+    三害: string[];
+    六合: string[]
   };
 
   const pillars = [bazi.year, bazi.month, bazi.day, bazi.hour];

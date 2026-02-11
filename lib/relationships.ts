@@ -325,7 +325,7 @@ function analyzeStemRelations(stem1: string, stem2: string): StemBranchRelation 
 }
 
 // 📊 完整分析四柱八字的关系
-export function analyzeRelationships(bazi: Bazi): RelationshipAnalysis | null {
+function analyzeRelationships(bazi: Bazi): RelationshipAnalysis | null {
   try {
     const pillars = [bazi.year, bazi.month, bazi.day, bazi.hour];
     const interactions: StemBranchRelation[] = [];
