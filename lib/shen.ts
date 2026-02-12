@@ -425,11 +425,7 @@ function calculateShen(bazi: Bazi): ShenAnalysis {
   }
 }
 
-// 导出类型和函数
+// 导出函数
 export {
-  ShenType,
-  Shen,
-  ShenSystem,
-  ShenAnalysis,
   calculateShen
 };

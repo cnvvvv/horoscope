@@ -2,7 +2,8 @@
 // 天干地支完整关系网实现
 // 包含：三合、六冲、三会、三害、六合
 
-import { HEAVENLY_STEMS, EARTHLY_BRANCHES, STEM_BRANCH_MAP } from './bazi';
+import { HEAVENLY_STEMS, EARTHLY_BRANCHES, STEM_BRANCH_MAP } from './solar';
+import { Bazi } from '@/types/horoscope';
 
 // 关系类型定义
 export enum RelationType {
@@ -344,8 +345,6 @@ function analyzeRelationships(bazi: Bazi): RelationshipAnalysis | null {
 
         if (branchRelation) {
           interactions.push({
-            from: `${pillar1.heavenlyStem}${pillar1.earthlyBranch}`,
-            to: `${pillar2.heavenlyStem}${pillar2.earthlyBranch}`,
             ...branchRelation
           });
         }
@@ -355,7 +354,8 @@ function analyzeRelationships(bazi: Bazi): RelationshipAnalysis | null {
     // 2. 统计天干关系
     const stemsRelations = {
       sanHe: [] as string[],
-      liuChong: [] as string[]
+      liuChong: [] as string[],
+      sanHui: [] as string[]
     };
 
     for (let i = 0; i < pillars.length; i++) {
@@ -484,12 +484,6 @@ function analyzeRelationships(bazi: Bazi): RelationshipAnalysis | null {
 }
 
 // 导出类型和函数
-export type {
-  RelationType,
-  StemBranchRelation,
-  RelationshipAnalysis
-};
-
 export {
   SAN_HE_BRANCHES,
   SAN_HE_STEMS,

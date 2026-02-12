@@ -8,7 +8,7 @@ import { HEAVENLY_STEMS, EARTHLY_BRANCHES, STEM_BRANCH_MAP } from './solar';
 
 // 📊 八字结构定义
 
-export interface Bazi {
+interface Bazi {
   year: BaziYear;      // 年柱
   month: BaziMonth;    // 月柱
   day: BaziDay;       // 日柱
@@ -18,21 +18,21 @@ export interface Bazi {
   birthType: 'lunar' | 'solar'; // 出生类型（农历/公历）
 }
 
-export interface BaziYear {
+interface BaziYear {
   heavenlyStem: string;   // 天干（甲、乙、丙、丁、戊、己、庚、辛、壬、癸）
   earthlyBranch: string;  // 地支（子、丑、寅、卯、辰、巳、午、未、申、酉、戌、亥）
   hiddenHeavenlyStem?: string;  // 藏干
   hiddenEarthlyBranch?: string; // 藏支
 }
 
-export interface BaziMonth {
+interface BaziMonth {
   heavenlyStem: string;
   earthlyBranch: string;
   hiddenHeavenlyStem?: string;
   hiddenEarthlyBranch?: string;
 }
 
-export interface BaziDay {
+interface BaziDay {
   heavenlyStem: string;
   earthlyBranch: string;
   hiddenHeavenlyStem?: string;
@@ -43,7 +43,7 @@ export interface BaziDay {
   hiddenEarthlyBranch3?: string; // 余气藏支
 }
 
-export interface BaziHour {
+interface BaziHour {
   heavenlyStem: string;
   earthlyBranch: string;
   hiddenHeavenlyStem?: string;
@@ -52,19 +52,26 @@ export interface BaziHour {
 
 // 🧪 天干地支常量
 
-const EARTHLY_BRANCH_HIDDENS = {
-  '子': { '天干': '癸', '地支': '癸' },
-  '丑': { '天干': '己', '地支': '己' },
-  '寅': { '天干': '戊', '地支': '戊', '中气藏干': '丙', '中气藏支': '戊' },
-  '卯': { '天干': '乙', '地支': '乙', '中气藏干': '己', '中气藏支': '癸' },
-  '辰': { '天干': '乙', '地支': '乙', '中气藏干': '辛', '中气藏支': '丁' },
-  '巳': { '天干': '丙', '地支': '丙', '中气藏干': '戊', '中气藏支': '申' },
-  '午': { '天干': '丁', '地支': '丁', '中气藏干': '己', '中气藏支': '癸' },
-  '未': { '天干': '己', '地支': '己', '中气藏干': '己', '中气藏支': '丁' },
-  '申': { '天干': '庚', '地支': '庚', '中气藏干': '壬', '中气藏支': '辰' },
-  '酉': { '天干': '辛', '地支': '辛', '中气藏干': '庚', '中气藏支': '丁' },
-  '戌': { '天干': '戊', '地支': '戊', '中气藏干': '戊', '中气藏支': '寅' },
-  '亥': { '天干': '壬', '地支': '壬', '中气藏干': '甲', '中气藏支': '辛' }
+const EARTHLY_BRANCH_HIDDENS: Record<string, {
+  hiddenHeavenlyStem: string;
+  hiddenEarthlyBranch: string;
+  hiddenHeavenlyStem2?: string;
+  hiddenEarthlyBranch2?: string;
+  hiddenHeavenlyStem3?: string;
+  hiddenEarthlyBranch3?: string;
+}> = {
+  '子': { hiddenHeavenlyStem: '癸', hiddenEarthlyBranch: '癸' },
+  '丑': { hiddenHeavenlyStem: '己', hiddenEarthlyBranch: '己' },
+  '寅': { hiddenHeavenlyStem: '戊', hiddenEarthlyBranch: '戊', hiddenHeavenlyStem2: '丙', hiddenEarthlyBranch2: '戊' },
+  '卯': { hiddenHeavenlyStem: '乙', hiddenEarthlyBranch: '乙', hiddenHeavenlyStem2: '己', hiddenEarthlyBranch2: '癸' },
+  '辰': { hiddenHeavenlyStem: '乙', hiddenEarthlyBranch: '乙', hiddenHeavenlyStem2: '辛', hiddenEarthlyBranch2: '丁' },
+  '巳': { hiddenHeavenlyStem: '丙', hiddenEarthlyBranch: '丙', hiddenHeavenlyStem2: '戊', hiddenEarthlyBranch2: '申' },
+  '午': { hiddenHeavenlyStem: '丁', hiddenEarthlyBranch: '丁', hiddenHeavenlyStem2: '己', hiddenEarthlyBranch2: '癸' },
+  '未': { hiddenHeavenlyStem: '己', hiddenEarthlyBranch: '己', hiddenHeavenlyStem2: '己', hiddenEarthlyBranch2: '丁' },
+  '申': { hiddenHeavenlyStem: '庚', hiddenEarthlyBranch: '庚', hiddenHeavenlyStem2: '壬', hiddenEarthlyBranch2: '辰' },
+  '酉': { hiddenHeavenlyStem: '辛', hiddenEarthlyBranch: '辛', hiddenHeavenlyStem2: '庚', hiddenEarthlyBranch2: '丁' },
+  '戌': { hiddenHeavenlyStem: '戊', hiddenEarthlyBranch: '戊', hiddenHeavenlyStem2: '戊', hiddenEarthlyBranch2: '寅' },
+  '亥': { hiddenHeavenlyStem: '壬', hiddenEarthlyBranch: '壬', hiddenHeavenlyStem2: '甲', hiddenEarthlyBranch2: '辛' }
 };
 
 // 🔄 天干地支循环（60甲子）
@@ -83,21 +90,23 @@ function getMonthPillar(year: number, month: number, day: number): BaziMonth {
   const yearStem = HEAVENLY_STEMS[yearIndex];
 
   // 2. 计算月柱地支
-  const monthBranch = EARTHLY_BRANCHES[(year - 4) * 12 + month - 1] % 12;
+  const monthIndex = ((year - 4) * 12 + month - 1) % 12;
+  const monthBranch = EARTHLY_BRANCHES[monthIndex];
 
   // 3. 计算月柱天干
-  const monthStem = HEAVENLY_STEMS[(year - 4) * 12 + month - 1] % 10;
+  const stemIndex = ((year - 4) * 12 + month - 1) % 10;
+  const monthStem = HEAVENLY_STEMS[stemIndex];
 
   // 4. 获取藏干
-  const hiddenStem = EARTHLY_BRANCH_HIDDENS[monthBranch].hiddenHeavenlyStem || null;
+  const hiddenStem = EARTHLY_BRANCH_HIDDENS[monthBranch].hiddenHeavenlyStem || undefined;
 
   // 5. 获取藏支
-  const hiddenBranch = EARTHLY_BRANCH_HIDDENS[monthBranch].hiddenEarthlyBranch || null;
+  const hiddenBranch = EARTHLY_BRANCH_HIDDENS[monthBranch].hiddenEarthlyBranch || undefined;
 
   return {
     heavenlyStem: yearStem,
     earthlyBranch: monthBranch,
-    hiddenHeavenlyStem: hiddenStem,
+    hiddenHeavenlyStem: hiddenStem || undefined,
     hiddenEarthlyBranch: hiddenBranch
   };
 }
@@ -111,18 +120,18 @@ function getDayPillar(year: number, month: number, day: number): BaziDay {
   const dayBranch = EARTHLY_BRANCHES[((year - 4) * 12 + month - 1 + day - 1) % 12];
 
   // 3. 获取藏干（主气）
-  const hiddenStem = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenHeavenlyStem || null;
+  const hiddenStem = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenHeavenlyStem || undefined;
 
   // 4. 获取藏支（主气）
-  const hiddenBranch = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenEarthlyBranch || null;
+  const hiddenBranch = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenEarthlyBranch || undefined;
 
   // 5. 获取中气藏干和藏支
-  const hiddenStem2 = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenHeavenlyStem2 || null;
-  const hiddenBranch2 = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenEarthlyBranch2 || null;
+  const hiddenStem2 = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenHeavenlyStem2 || undefined;
+  const hiddenBranch2 = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenEarthlyBranch2 || undefined;
 
   // 6. 获取余气藏干和藏支
-  const hiddenStem3 = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenHeavenlyStem3 || null;
-  const hiddenBranch3 = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenEarthlyBranch3 || null;
+  const hiddenStem3 = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenHeavenlyStem3 || undefined;
+  const hiddenBranch3 = EARTHLY_BRANCH_HIDDENS[dayBranch].hiddenEarthlyBranch3 || undefined;
 
   return {
     heavenlyStem: dayStem,
@@ -146,10 +155,10 @@ function getHourPillar(year: number, month: number, day: number, hour: number): 
   const hourStem = HEAVENLY_STEMS[(dayIndex * 12 + hour) % 10];
 
   // 3. 获取藏干
-  const hiddenStem = EARTHLY_BRANCH_HIDDENS[hourBranch].hiddenHeavenlyStem || null;
+  const hiddenStem = EARTHLY_BRANCH_HIDDENS[hourBranch].hiddenHeavenlyStem || undefined;
 
   // 4. 获取藏支
-  const hiddenBranch = EARTHLY_BRANCH_HIDDENS[hourBranch].hiddenEarthlyBranch || null;
+  const hiddenBranch = EARTHLY_BRANCH_HIDDENS[hourBranch].hiddenEarthlyBranch || undefined;
 
   return {
     heavenlyStem: hourStem,
@@ -169,10 +178,10 @@ function getYearPillar(year: number): BaziYear {
   const yearBranch = EARTHLY_BRANCHES[(year - 4) % 12];
 
   // 3. 获取藏干
-  const hiddenStem = EARTHLY_BRANCH_HIDDENS[yearBranch].hiddenHeavenlyStem || null;
+  const hiddenStem = EARTHLY_BRANCH_HIDDENS[yearBranch].hiddenHeavenlyStem || undefined;
 
   // 4. 获取藏支
-  const hiddenBranch = EARTHLY_BRANCH_HIDDENS[yearBranch].hiddenEarthlyBranch || null;
+  const hiddenBranch = EARTHLY_BRANCH_HIDDENS[yearBranch].hiddenEarthlyBranch || undefined;
 
   return {
     heavenlyStem: yearStem,

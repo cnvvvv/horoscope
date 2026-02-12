@@ -5,16 +5,16 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Link } from 'next/link';
+import Link from 'next/link';
 import {
   ArrowLeft, TrendingUp, TrendingDown, AlertTriangle,
   Clock, Compass, Star, RefreshCw, Info
 } from 'lucide-react';
 import {
   QimenPan, QimenAnalysis, JiuGong, QimenCategory
-} from '../../../lib/qimen';
-import { getScoreColor, getScoreDescription } from '../../../lib/qimen-score';
-import { QIMEN_TERMS } from '../../../lib/qimen-core';
+} from '@/types/qimen';
+import { getScoreColor, getScoreDescription } from '@/lib/qimen-score';
+import { QIMEN_TERMS } from '@/lib/qimen-core';
 
 export default function QimenResultPage() {
   const searchParams = useSearchParams();

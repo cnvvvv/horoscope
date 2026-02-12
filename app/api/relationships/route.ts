@@ -1,3 +1,4 @@
+'use dynamic';
 // 📊 天干地支关系分析API接口
 // GET /api/relationships?year=2024&month=1&day=1&hour=0&gender=male&type=solar
 

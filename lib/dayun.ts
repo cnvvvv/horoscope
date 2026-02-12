@@ -57,7 +57,7 @@ const STEM_TO_BRANCH_MAP = {
 };
 
 // 天干相冲
-const STEM_CONFLICTS = {
+const STEM_CONFLICTS: Record<string, string> = {
   '甲': '庚',
   '乙': '辛',
   '丙': '壬',
@@ -71,7 +71,7 @@ const STEM_CONFLICTS = {
 };
 
 // 地支相冲
-const BRANCH_CONFLICTS = {
+const BRANCH_CONFLICTS: Record<string, string> = {
   '子': '午',
   '丑': '未',
   '寅': '申',
@@ -92,18 +92,14 @@ function calculateDaYun(bazi: Bazi, startAge: number = 1, currentYear: number): 
     const phases: DaYunPhase[] = [];
     
     // 1. 计算起始天干和地支
-    const startStemIndex = HEAVENLY_STEMS.indexOf(bazi.year.heavenlyStem);
-    const startBranchIndex = EARTHLY_BRANCHES.indexOf(bazi.year.earthlyBranch);
+    const startStemIndex = (HEAVENLY_STEMS as unknown as string[]).indexOf(bazi.year.heavenlyStem);
+    const startBranchIndex = (EARTHLY_BRANCHES as unknown as string[]).indexOf(bazi.year.earthlyBranch);
     
     // 2. 计算每个大运阶段（10个）
     for (let i = 0; i < 10; i++) {
       const age = startAge + i * 10;
       const ageEnd = age + 9;
-      const year = bazi.year.birthType === 'solar' 
-        ? bazi.year.heavenlyStem.startsWith('甲') 
-          ? 1904 + age 
-          : 1900 + age
-        : (parseInt(bazi.year.heavenlyStem) + i) % 10;
+      const year = currentYear - age;
       
       // 3. 计算大运天干（每10年顺时针推1位）
       const stemIndex = (startStemIndex + i) % 10;
@@ -182,12 +178,18 @@ function calculateDaYun(bazi: Bazi, startAge: number = 1, currentYear: number): 
 function calculateLiuNian(bazi: Bazi, year: number, daYunPhase: DaYunPhase): LiuNian {
   try {
     // 1. 计算流年天干（根据大运天干推算）
-    const stemIndex = (HEAVENLY_STEMS.indexOf(daYunPhase.heavenlyStem) + (year - daYunPhase.year)) % 10;
+    const stemIndex = (HEAVENLY_STEMS.indexOf(daYunPhase.heavenlyStem as any) + (year - daYunPhase.year)) % 10;
     const heavenlyStem = HEAVENLY_STEMS[stemIndex];
     
+    // 确保索引有效
+    const validHeavenlyStem = HEAVENLY_STEMS[stemIndex] || HEAVENLY_STEMS[0];
+    
     // 2. 计算流年地支
-    const branchIndex = (EARTHLY_BRANCHES.indexOf(daYunPhase.earthlyBranch) + (year - daYunPhase.year)) % 12;
+    const branchIndex = (EARTHLY_BRANCHES.indexOf(daYunPhase.earthlyBranch as any) + (year - daYunPhase.year)) % 12;
     const earthlyBranch = EARTHLY_BRANCHES[branchIndex];
+    
+    // 确保索引有效
+    const validEarthlyBranch = EARTHLY_BRANCHES[branchIndex] || EARTHLY_BRANCHES[0];
     
     // 3. 分析流年
     const analysis = analyzeLiuNianYear(heavenlyStem, earthlyBranch, bazi);
@@ -423,12 +425,6 @@ function calculateDaYunOverallScore(phases: DaYunPhase[], currentPhase: DaYunPha
 }
 
 // 导出类型和函数
-export type {
-  DaYunPhase,
-  DaYunCycle,
-  LiuNian
-};
-
 export {
   calculateDaYun,
   calculateLiuNian,

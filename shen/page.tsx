@@ -7,7 +7,24 @@ import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, User, Star, Zap, Shield, TrendingUp, RefreshCw } from 'lucide-react';
-import { ShenAnalysis, ShenType, ShenSystem, SHEN_INFO } from '@/types/horoscope';
+import { ShenAnalysis, ShenType, ShenSystem } from '@/types/horoscope';
+
+// 十神信息常量
+const SHEN_INFO = {
+  ZHENG_CAI: { name: '正财', icon: '💰', color: '#22c55e', description: '代表稳定的财运，正财之人理财能力强' },
+  PIAN_CAI: { name: '偏财', icon: '🤑', color: '#3b82f6', description: '代表意外之财，偏财之人有横财机会' },
+  QI_SHA: { name: '七杀', icon: '⚔️', color: '#ef4444', description: '代表压力和挑战，七杀之人有领导力' },
+  ZHENG_GUAN: { name: '正官', icon: '👑', color: '#8b5cf6', description: '代表事业和地位，正官之人有责任感' },
+  ZHENG_YIN: { name: '正印', icon: '📚', color: '#f59e0b', description: '代表智慧和贵人，正印之人学习能力强' },
+  PIAN_YIN: { name: '偏印', icon: '🧠', color: '#10b981', description: '代表灵感和创意，偏印之人思维独特' },
+  SHANG_GUAN: { name: '伤官', icon: '🔥', color: '#ec4899', description: '代表才华和表达，伤官之人有艺术天赋' },
+  SHI_SHEN: { name: '食神', icon: '🍽️', color: '#6366f1', description: '代表享受和福气，食神之人生活品质高' },
+  BI_JIAN: { name: '比肩', icon: '🤝', color: '#06b6d4', description: '代表竞争和朋友，比肩之人有团队精神' },
+  JIE_CAI: { name: '劫财', icon: '⚡', color: '#f97316', description: '代表争夺和消耗，劫财之人需要谨慎理财' },
+  WU_CAI: { name: '无财', icon: '💤', color: '#6b7280', description: '日主未发现明显财星，财运平缓' },
+  WU_GUAN: { name: '无官', icon: '📝', color: '#6b7280', description: '日主未发现明显官星，事业运平稳' },
+  WU_YIN: { name: '无印', icon: '📖', color: '#6b7280', description: '日主未发现明显印星，学习运平稳' }
+};
 
 export default function ShenDisplayPage() {
   const searchParams = useSearchParams();
@@ -178,43 +195,58 @@ export default function ShenDisplayPage() {
 
           {/* 十神分类 */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            {/* 吉神 */}
+            {/* 日主十神 */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                <Zap className="h-6 w-6 text-green-600 mr-2" />
-                吉神 ({shen?.shenCount.positive || 0})
+                <User className="h-6 w-6 text-blue-600 mr-2" />
+                日主十神
               </h3>
               <div className="space-y-3">
-                {shen?.positiveShen && shen.positiveShen.length > 0 ? (
-                  shen.positiveShen.map((shen, index) => (
-                    <div key={index} className="bg-green-50 rounded-lg p-3">
-                      <p className="font-semibold text-green-900">{shen.name}</p>
-                      <p className="text-green-800 text-sm mt-1">{shen.description}</p>
+                {shen?.dayShen ? (
+                  <div className={`rounded-lg p-4 ${
+                    shen.dayShen.positive ? 'bg-green-50 border-l-4 border-green-500' :
+                    shen.dayShen.negative ? 'bg-red-50 border-l-4 border-red-500' :
+                    'bg-gray-50 border-l-4 border-gray-500'
+                  }`}>
+                    <p className="font-semibold text-lg mb-2">{shen.dayShen.name}</p>
+                    <p className="text-gray-800 mb-2">{shen.dayShen.description}</p>
+                    <div className="flex items-center text-sm">
+                      <span className="inline-block w-3 h-3 rounded-full mr-2" style={{ backgroundColor: SHEN_INFO[shen.dayShen.type as unknown as keyof typeof SHEN_INFO]?.color || '#6b7280' }}></span>
+                      <span className="text-gray-600">{shen.dayShen.positive ? '吉神' : shen.dayShen.negative ? '凶神' : '中性'}</span>
                     </div>
-                  ))
+                  </div>
                 ) : (
-                  <p className="text-gray-600 text-center py-4">未发现明显吉神</p>
+                  <p className="text-gray-600 text-center py-4">未找到日主十神信息</p>
                 )}
               </div>
             </div>
             
-            {/* 凶神 */}
+            {/* 十神统计 */}
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                <Shield className="h-6 w-6 text-red-600 mr-2" />
-                凶神 ({shen?.shenCount.negative || 0})
+                <Star className="h-6 w-6 text-yellow-600 mr-2" />
+                十神统计
               </h3>
-              <div className="space-y-3">
-                {shen?.negativeShen && shen.negativeShen.length > 0 ? (
-                  shen.negativeShen.map((shen, index) => (
-                    <div key={index} className="bg-red-50 rounded-lg p-3">
-                      <p className="font-semibold text-red-900">{shen.name}</p>
-                      <p className="text-red-800 text-sm mt-1">{shen.description}</p>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-600 text-center py-4">未发现明显凶神</p>
-                )}
+              <div className="space-y-4">
+                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="text-gray-700">吉神数量</span>
+                  <span className="text-green-600 font-bold text-xl">{shen?.shenCount.positive || 0}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="text-gray-700">凶神数量</span>
+                  <span className="text-red-600 font-bold text-xl">{shen?.shenCount.negative || 0}</span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <span className="text-gray-700">中性十神</span>
+                  <span className="text-gray-600 font-bold text-xl">{shen?.shenCount.neutral || 0}</span>
+                </div>
+                <div className="pt-3 border-t border-gray-200">
+                  <p className="text-sm text-gray-600">
+                    {shen?.shenCount && shen.shenCount.positive > shen.shenCount.negative ? '吉神占优，运势较好' :
+                     shen?.shenCount && shen.shenCount.negative > shen.shenCount.positive ? '凶神占优，需要谨慎' :
+                     '吉凶平衡，运势平稳'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>

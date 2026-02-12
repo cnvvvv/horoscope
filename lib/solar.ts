@@ -4,6 +4,9 @@
 // 支持闰年、闰月判断
 // 支持二十四节气计算
 
+// 导入类型
+import { LunarDate, SolarTerm } from '@/types/horoscope';
+
 // 天干常量
 const HEAVENLY_STEMS = [
   '甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'
@@ -21,30 +24,30 @@ const STEM_BRANCH_MAP: Record<string, string> = {
 
 // 二十四节气
 export const SOLAR_TERMS: SolarTerm[] = [
-  { name: '立春', month: 2, day: 4, term: '立春开始' },
-  { name: '雨水', month: 2, day: 19, term: '雨水' },
-  { name: '惊蛰', month: 3, day: 6, term: '惊蛰' },
-  { name: '春分', month: 3, day: 21, term: '春分' },
-  { name: '清明', month: 4, day: 5, term: '清明' },
-  { name: '谷雨', month: 4, day: 20, term: '谷雨' },
-  { name: '立夏', month: 5, day: 6, term: '立夏开始' },
-  { name: '小满', month: 5, day: 21, term: '小满' },
-  { name: '芒种', month: 6, day: 6, term: '芒种' },
-  { name: '夏至', month: 6, day: 22, term: '夏至' },
-  { name: '小暑', month: 7, day: 7, term: '小暑' },
-  { name: '大暑', month: 7, day: 23, term: '大暑' },
-  { name: '立秋', month: 8, day: 8, term: '立秋开始' },
-  { name: '处暑', month: 8, day: 23, term: '处暑' },
-  { name: '白露', month: 9, day: 8, term: '白露' },
-  { name: '秋分', month: 9, day: 23, term: '秋分' },
-  { name: '寒露', month: 10, day: 9, term: '寒露' },
-  { name: '霜降', month: 10, day: 24, term: '霜降' },
-  { name: '立冬', month: 11, day: 8, term: '立冬开始' },
-  { name: '小雪', month: 11, day: 22, term: '小雪' },
-  { name: '大雪', month: 12, day: 7, term: '大雪' },
-  { name: '冬至', month: 12, day: 22, term: '冬至' },
-  { name: '小寒', month: 1, day: 6, term: '小寒' },
-  { name: '大寒', month: 1, day: 20, term: '大寒' },
+  { name: '立春', month: 2, day: 4, year: 2023, timestamp: new Date(2023, 1, 4) },
+  { name: '雨水', month: 2, day: 19, year: 2023, timestamp: new Date(2023, 1, 19) },
+  { name: '惊蛰', month: 3, day: 6, year: 2023, timestamp: new Date(2023, 2, 6) },
+  { name: '春分', month: 3, day: 21, year: 2023, timestamp: new Date(2023, 2, 21) },
+  { name: '清明', month: 4, day: 5, year: 2023, timestamp: new Date(2023, 3, 5) },
+  { name: '谷雨', month: 4, day: 20, year: 2023, timestamp: new Date(2023, 3, 20) },
+  { name: '立夏', month: 5, day: 6, year: 2023, timestamp: new Date(2023, 4, 6) },
+  { name: '小满', month: 5, day: 21, year: 2023, timestamp: new Date(2023, 4, 21) },
+  { name: '芒种', month: 6, day: 6, year: 2023, timestamp: new Date(2023, 5, 6) },
+  { name: '夏至', month: 6, day: 22, year: 2023, timestamp: new Date(2023, 5, 22) },
+  { name: '小暑', month: 7, day: 7, year: 2023, timestamp: new Date(2023, 6, 7) },
+  { name: '大暑', month: 7, day: 23, year: 2023, timestamp: new Date(2023, 6, 23) },
+  { name: '立秋', month: 8, day: 8, year: 2023, timestamp: new Date(2023, 7, 8) },
+  { name: '处暑', month: 8, day: 23, year: 2023, timestamp: new Date(2023, 7, 23) },
+  { name: '白露', month: 9, day: 8, year: 2023, timestamp: new Date(2023, 8, 8) },
+  { name: '秋分', month: 9, day: 23, year: 2023, timestamp: new Date(2023, 8, 23) },
+  { name: '寒露', month: 10, day: 9, year: 2023, timestamp: new Date(2023, 9, 9) },
+  { name: '霜降', month: 10, day: 24, year: 2023, timestamp: new Date(2023, 9, 24) },
+  { name: '立冬', month: 11, day: 8, year: 2023, timestamp: new Date(2023, 10, 8) },
+  { name: '小雪', month: 11, day: 22, year: 2023, timestamp: new Date(2023, 10, 22) },
+  { name: '大雪', month: 12, day: 7, year: 2023, timestamp: new Date(2023, 11, 7) },
+  { name: '冬至', month: 12, day: 22, year: 2023, timestamp: new Date(2023, 11, 22) },
+  { name: '小寒', month: 1, day: 6, year: 2024, timestamp: new Date(2024, 0, 6) },
+  { name: '大寒', month: 1, day: 20, year: 2024, timestamp: new Date(2024, 0, 20) },
 ];
 
 // 天干地支循环
@@ -129,13 +132,7 @@ export interface SolarDate {
   isLeapMonth: boolean;  // 闰月
 }
 
-export interface LunarDate {
-  lunarYear: number;    // 农历年份
-  lunarMonth: string;    // 农历月份名称（如"正月"、"二月"等）
-  lunarDay: number;      // 农历日期（初一至三十）
-  isLeapYear: boolean;    // 闰年
-  leapMonth: number;      // 闰月（0-11月）
-}
+
 
 export function solarToLunar(solarDate: SolarDate): LunarDate | null {
   try {
@@ -189,13 +186,13 @@ export function solarToLunar(solarDate: SolarDate): LunarDate | null {
 
     return {
       lunarYear,
-      lunarMonth,
+      lunarMonth: Number(lunarMonth),
       lunarDay,
       isLeapYear: leapYear,
       leapMonth,
-      currentTerm: currentTerm.name,
-      monthBoundary,
-      dayBoundary
+      monthTerm: currentTerm.name,
+      dayTerm: currentTerm.name,
+      yearTerm: currentTerm.name
     };
   } catch (error) {
     console.error('solarToLunar转换失败:', error);
@@ -223,6 +220,7 @@ export function isTermPassed(year: number, month: number, day: number, termName:
   const currentDate = new Date(year, month - 1, day);
   const termDate = getSolarTermDate(year, SOLAR_TERMS.findIndex(t => t.name === termName) + 1);
 
+  if (!termDate) return false;
   return currentDate >= termDate;
 }
 

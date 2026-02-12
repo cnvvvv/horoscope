@@ -2,9 +2,11 @@
 // Qimen Dunjia Board Layout Algorithm
 
 import {
-  QimenPan, GongInfo, JiuGong, JiuXing, BaMen, BaShen, TianGan,
-  JIU_GONG_SEQUENCE, JIU_XING_SEQUENCE, BA_MEN_SEQUENCE, BA_SHEN_SEQUENCE,
-  cycleIndex, isLucky
+  QimenPan, GongInfo, JiuGong, JiuXing, BaMen, BaShen, TianGan
+} from '@/types/qimen';
+import {
+  cycleIndex, isLucky,
+  JIU_GONG_SEQUENCE, JIU_XING_SEQUENCE, BA_MEN_SEQUENCE, BA_SHEN_SEQUENCE
 } from './qimen-core';
 
 // 🧮 计算局数（简化版）
@@ -69,7 +71,7 @@ export function layoutTianPan(juNumber: number, isYin: boolean): Record<JiuGong,
     
     const gong = JIU_GONG_SEQUENCE[i];
     const xing = JIU_XING_SEQUENCE[xingIndex];
-    result[gong] = xing;
+    result[gong as JiuGong] = xing;
   }
 
   return result as Record<JiuGong, JiuXing>;
@@ -92,7 +94,7 @@ export function layoutRenPan(juNumber: number, isYin: boolean): Record<JiuGong, 
     
     const gong = JIU_GONG_SEQUENCE[i];
     const men = BA_MEN_SEQUENCE[menIndex];
-    result[gong] = men;
+    result[gong as JiuGong] = men;
   }
 
   return result as Record<JiuGong, BaMen>;
@@ -115,7 +117,7 @@ export function layoutShenPan(juNumber: number, isYin: boolean): Record<JiuGong,
     
     const gong = JIU_GONG_SEQUENCE[i];
     const shen = BA_SHEN_SEQUENCE[shenIndex];
-    result[gong] = shen;
+    result[gong as JiuGong] = shen;
   }
 
   return result as Record<JiuGong, BaShen>;
@@ -145,7 +147,7 @@ export function paiQimenPan(
   const shenPan = layoutShenPan(panJu, isYinDunFlag);
   
   // 构建九宫信息
-  const jiuGong: GongInfo[] = JIU_GONG_SEQUENCE.map((gong) => {
+  const jiuGong: GongInfo[] = JIU_GONG_SEQUENCE.map((gong: JiuGong) => {
     return {
       gong,
       diPan: {
@@ -153,14 +155,14 @@ export function paiQimenPan(
         gan: getDiPanGan(gong, panJu)
       },
       tianPan: {
-        xing: tianPan[gong],
+        xing: tianPan[gong as JiuGong],
         gan: getTianPanGan(gong, panJu, hour)
       },
       renPan: {
-        men: renPan[gong]
+        men: renPan[gong as JiuGong]
       },
       shenPan: {
-        shen: shenPan[gong]
+        shen: shenPan[gong as JiuGong]
       },
       isZhiFu: gong === zhiFu.gong,
       isZhiShi: gong === zhiShi.gong
@@ -184,7 +186,11 @@ export function paiQimenPan(
 // 🧮 获取地盘天干（简化）
 function getDiPanGan(gong: JiuGong, juNumber: number): TianGan | undefined {
   // 简化：根据宫位和局数返回天干
-  const tianGanList: TianGan[] = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+  const tianGanList = [
+    TianGan.JIA, TianGan.YI, TianGan.BING, TianGan.DING,
+    TianGan.WU, TianGan.JI, TianGan.GENG, TianGan.XIN,
+    TianGan.REN, TianGan.GUI
+  ];
   const gongIndex = JIU_GONG_SEQUENCE.indexOf(gong);
   const ganIndex = (juNumber - 1 + gongIndex) % 10;
   return tianGanList[ganIndex];
@@ -193,7 +199,11 @@ function getDiPanGan(gong: JiuGong, juNumber: number): TianGan | undefined {
 // 🧮 获取天盘天干（简化）
 function getTianPanGan(gong: JiuGong, juNumber: number, hour: number): TianGan | undefined {
   // 简化：根据宫位、局数和时辰返回天干
-  const tianGanList: TianGan[] = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+  const tianGanList = [
+    TianGan.JIA, TianGan.YI, TianGan.BING, TianGan.DING,
+    TianGan.WU, TianGan.JI, TianGan.GENG, TianGan.XIN,
+    TianGan.REN, TianGan.GUI
+  ];
   const gongIndex = JIU_GONG_SEQUENCE.indexOf(gong);
   const ganIndex = (juNumber - 1 + gongIndex + hour) % 10;
   return tianGanList[ganIndex];

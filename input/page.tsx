@@ -39,20 +39,18 @@ export default function InputFormPage() {
     // 验证出生日期
     if (!formData.birthDate) {
       newErrors.birthDate = '请选择出生日期';
-    }
+    } else {
+      const { year, month, day } = formData.birthDate;
 
-    const { year, month, day } = formData.birthDate;
-
-    if (year < 1900 || year > 2100) {
-      newErrors.birthDate = '年份必须在1900-2100之间';
-    }
-
-    if (month < 1 || month > 12) {
-      newErrors.birthDate = '月份必须在1-12之间';
-    }
-
-    if (day < 1 || day > 31) {
-      newErrors.birthDate = '日期必须在1-31之间';
+      if (year < 1900 || year > 2100) {
+        newErrors.birthDate = '年份必须在1900-2100之间';
+      }
+      if (month < 1 || month > 12) {
+        newErrors.birthDate = '月份必须在1-12之间';
+      }
+      if (day < 1 || day > 31) {
+        newErrors.birthDate = '日期必须在1-31之间';
+      }
     }
 
     setErrors(newErrors);
@@ -69,13 +67,15 @@ export default function InputFormPage() {
     setLoading(true);
 
     try {
-      const { birthDate, ...rest } = formData;
-      
       const baziData: BaziFormData = {
         name: formData.name || '',
         gender: formData.gender!,
         birthType: formData.birthType!,
-        ...birthDate
+        birthDate: formData.birthDate!,
+        year: formData.birthDate?.year || 0,
+        month: formData.birthDate?.month || 0,
+        day: formData.birthDate?.day || 0,
+        hour: formData.birthDate?.hour || 0
       };
 
       // 存储到本地存储
@@ -116,6 +116,11 @@ export default function InputFormPage() {
       birthDate: {
         ...formData.birthDate,
         [field]: value
+      } as {
+        year: number;
+        month: number;
+        day: number;
+        hour: number;
       }
     });
     setErrors({ ...errors, birthDate: undefined });

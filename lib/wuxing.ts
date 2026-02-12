@@ -27,8 +27,43 @@ export const WU_XING_INTERACTIONS = {
   '土克水': true
 };
 
+// 天干到五行的映射
+const STEMS_TO_ELEMENTS: Record<string, string> = {
+  '甲': '木',
+  '乙': '木',
+  '丙': '火',
+  '丁': '火',
+  '戊': '土',
+  '己': '土',
+  '庚': '金',
+  '辛': '金',
+  '壬': '水',
+  '癸': '水'
+};
+
+// 地支到五行的映射
+const BRANCHES_TO_ELEMENTS: Record<string, string> = {
+  '子': '水',
+  '丑': '土',
+  '寅': '木',
+  '卯': '木',
+  '辰': '土',
+  '巳': '火',
+  '午': '火',
+  '未': '土',
+  '申': '金',
+  '酉': '金',
+  '戌': '土',
+  '亥': '水'
+};
+
 // 五行生克相冲表
-const WU_XING_TABLE = {
+const WU_XING_TABLE: Record<string, {
+  '生': string[];
+  '克': string[];
+  '被生': string[];
+  '被克': string[];
+}> = {
   '金': {
     '生': ['水'],
     '克': ['木'],
@@ -73,11 +108,11 @@ interface WuXingScore {
 // 五行分析结果
 export interface WuXingAnalysis {
   scores: {
-    metal: WuXingScore;
-    wood: WuXingScore;
-    water: WuXingScore;
-    fire: WuXingScore;
-    earth: WuXingScore;
+    金: WuXingScore;
+    木: WuXingScore;
+    水: WuXingScore;
+    火: WuXingScore;
+    土: WuXingScore;
   };
   strongElements: string[];     // 强势五行
   weakElements: string[];      // 弱势五行
@@ -109,19 +144,28 @@ function countWuXing(bazi: Bazi): Map<WuXing, number> {
 
   // 统计天干
   [bazi.year, bazi.month, bazi.day, bazi.hour].forEach(pillar => {
-    counts.set(pillar.heavenlyStem as WuXing, (counts.get(pillar.heavenlyStem as WuXing) || 0) + 1);
+    const element = STEMS_TO_ELEMENTS[pillar.heavenlyStem];
+    if (element) {
+      counts.set(element as WuXing, (counts.get(element as WuXing) || 0) + 1);
+    }
   });
 
   // 统计地支
   [bazi.year, bazi.month, bazi.day, bazi.hour].forEach(pillar => {
-    counts.set(pillar.earthlyBranch as WuXing, (counts.get(pillar.earthlyBranch as WuXing) || 0) + 1);
+    const element = BRANCHES_TO_ELEMENTS[pillar.earthlyBranch];
+    if (element) {
+      counts.set(element as WuXing, (counts.get(element as WuXing) || 0) + 1);
+    }
   });
 
   // 统计藏干
   [bazi.year.hiddenHeavenlyStem, bazi.month.hiddenHeavenlyStem, 
    bazi.day.hiddenHeavenlyStem, bazi.hour.hiddenHeavenlyStem].forEach(stem => {
     if (stem) {
-      counts.set(stem as WuXing, (counts.get(stem as WuXing) || 0) + 1);
+      const element = STEMS_TO_ELEMENTS[stem];
+      if (element) {
+        counts.set(element as WuXing, (counts.get(element as WuXing) || 0) + 1);
+      }
     }
   });
 
@@ -175,21 +219,25 @@ function analyzeInteractions(bazi: Bazi): {
       const pillar2 = pillars[j];
 
       // 相生关系
-      if (WU_XING_TABLE[pillar1.heavenlyStem]?.生.includes(pillar2.heavenlyStem)) {
-        interactions.generated.push(`年柱(${pillar1.heavenlyStem})生月柱(${pillar2.heavenlyStem})`);
+      const element1Stem = STEMS_TO_ELEMENTS[pillar1.heavenlyStem];
+      const element2Stem = STEMS_TO_ELEMENTS[pillar2.heavenlyStem];
+      if (element1Stem && element2Stem && WU_XING_TABLE[element1Stem]?.生.includes(element2Stem)) {
+        interactions.generated.push(`${pillar1.heavenlyStem}(${element1Stem})生${pillar2.heavenlyStem}(${element2Stem})`);
       }
       
-      if (WU_XING_TABLE[pillar1.earthlyBranch]?.生.includes(pillar2.earthlyBranch)) {
-        interactions.generated.push(`年支(${pillar1.earthlyBranch})生月支(${pillar2.earthlyBranch})`);
+      const element1Branch = BRANCHES_TO_ELEMENTS[pillar1.earthlyBranch];
+      const element2Branch = BRANCHES_TO_ELEMENTS[pillar2.earthlyBranch];
+      if (element1Branch && element2Branch && WU_XING_TABLE[element1Branch]?.生.includes(element2Branch)) {
+        interactions.generated.push(`${pillar1.earthlyBranch}(${element1Branch})生${pillar2.earthlyBranch}(${element2Branch})`);
       }
 
       // 相克关系
-      if (WU_XING_TABLE[pillar1.heavenlyStem]?.克.includes(pillar2.heavenlyStem)) {
-        interactions.克制.push(`年干(${pillar1.heavenlyStem})克月干(${pillar2.heavenlyStem})`);
+      if (element1Stem && element2Stem && WU_XING_TABLE[element1Stem]?.克.includes(element2Stem)) {
+        interactions.克制.push(`${pillar1.heavenlyStem}(${element1Stem})克${pillar2.heavenlyStem}(${element2Stem})`);
       }
       
-      if (WU_XING_TABLE[pillar1.earthlyBranch]?.克.includes(pillar2.earthlyBranch)) {
-        interactions.克制.push(`年支(${pillar1.earthlyBranch})克月支(${pillar2.earthlyBranch})`);
+      if (element1Branch && element2Branch && WU_XING_TABLE[element1Branch]?.克.includes(element2Branch)) {
+        interactions.克制.push(`${pillar1.earthlyBranch}(${element1Branch})克${pillar2.earthlyBranch}(${element2Branch})`);
       }
 
       // 冲克关系（简化版）
@@ -233,19 +281,19 @@ function generateSuggestions(analysis: WuXingAnalysis): string[] {
   const suggestions: string[] = [];
 
   // 检查缺失五行
-  if (analysis.scores.metal.count === 0) {
+  if (analysis.scores.金.count === 0) {
     suggestions.push('五行缺金：建议佩戴金属饰品或穿白色衣服补金');
   }
-  if (analysis.scores.wood.count === 0) {
+  if (analysis.scores.木.count === 0) {
     suggestions.push('五行缺木：建议养植绿色植物或穿青色衣服补木');
   }
-  if (analysis.scores.water.count === 0) {
+  if (analysis.scores.水.count === 0) {
     suggestions.push('五行缺水：建议多喝水或穿黑色衣服补水');
   }
-  if (analysis.scores.fire.count === 0) {
+  if (analysis.scores.火.count === 0) {
     suggestions.push('五行缺火：建议吃辣食或穿红色衣服补火');
   }
-  if (analysis.scores.earth.count === 0) {
+  if (analysis.scores.土.count === 0) {
     suggestions.push('五行缺土：建议接触大地或穿黄色衣服补土');
   }
 
@@ -329,7 +377,8 @@ export function analyzeWuXing(bazi: Bazi): WuXingAnalysis {
       dominantElement,
       balanceLevel: '',
       interactions,
-      suggestions: []
+      suggestions: [],
+      overallScore: 0
     } as WuXingAnalysis);
 
     // 7. 计算总体评分

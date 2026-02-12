@@ -1,3 +1,4 @@
+'use dynamic';
 // 📡 奇门遁甲分析API接口
 // GET /api/qimen/analyze?year=2024&month=1&day=1&hour=0&category=wealth&question=xxx
 

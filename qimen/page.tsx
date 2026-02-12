@@ -6,7 +6,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calculator, Clock, TrendingUp, ArrowRight } from 'lucide-react';
-import { QimenCategory } from '../../types/qimen';
+import { QimenCategory } from '@/types/qimen';
 
 export default function QimenInputPage() {
   const router = useRouter();

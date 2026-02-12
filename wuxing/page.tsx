@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { ArrowLeft, TrendingUp, TrendingDown, Circle, RefreshCw } from 'lucide-react';
 
 // 导入类型
-import { Bazi, WuXingAnalysis, WuXingScore, WU_XING_COLORS, WU_XING_GRADIENTS } from '@/types/horoscope';
+import { Bazi, WuXingAnalysis, WuXingScore, WuXing, WU_XING_COLORS, WU_XING_GRADIENTS } from '@/types/horoscope';
 
 export default function WuXingDisplayPage() {
   const searchParams = useSearchParams();
@@ -170,7 +170,8 @@ export default function WuXingDisplayPage() {
                 {/* 图例 */}
                 <div className="grid grid-cols-3 gap-2 mt-4 text-sm">
                   {Object.entries(WU_XING_INFO).map(([key, info]) => {
-                    const count = wuxing?.scores[key]?.count || 0;
+                    const lowerKey = key.toLowerCase();
+                    const count = wuxing?.scores[lowerKey as keyof typeof wuxing.scores]?.count || 0;
                     const percentage = count ? Math.round(count / 4 * 100) : 0;
                     
                     return (
@@ -191,8 +192,9 @@ export default function WuXingDisplayPage() {
                 <h3 className="text-xl font-bold text-gray-900 mb-4">五行强度分析</h3>
                 <div className="space-y-4">
                   {Object.entries(WU_XING_INFO).map(([key, info]) => {
-                    const score = wuxing?.scores[key]?.strength || 0;
-                    const balance = wuxing?.scores[key]?.balance || 'weak';
+                    const lowerKey = key.toLowerCase();
+                    const score = wuxing?.scores[lowerKey as keyof typeof wuxing.scores]?.strength || 0;
+                    const balance = wuxing?.scores[lowerKey as keyof typeof wuxing.scores]?.balance || 'weak';
                     
                     return (
                       <div key={key} className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
