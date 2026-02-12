@@ -4,11 +4,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { ArrowLeft, Calendar, Clock, Star, TrendingUp, TrendingDown, RefreshCw } from 'lucide-react';
 
 // 导入类型
-import { DaYunCycle, DaYunPhase, LiuNian } from '../../types/horoscope';
+import { DaYunCycle, DaYunPhase, LiuNian } from '@/types/horoscope';
 
 export default function DaYunDisplayPage() {
   const searchParams = useSearchParams();
@@ -249,7 +250,6 @@ export default function DaYunDisplayPage() {
                   </div>
                 </div>
               </div>
-              </div>
             </div>
           )}
 
@@ -318,12 +318,12 @@ export default function DaYunDisplayPage() {
               <div className="text-right">
                 <span className="text-sm text-gray-600 mr-2">总评分</span>
                 <span className={`text-4xl font-bold ${
-                  dayun?.score >= 70 ? 'text-green-700' :
-                  dayun?.score >= 50 ? 'text-yellow-700' :
-                  dayun?.score >= 30 ? 'text-orange-700' :
+                  dayun && dayun.score >= 70 ? 'text-green-700' :
+                  dayun && dayun.score >= 50 ? 'text-yellow-700' :
+                  dayun && dayun.score >= 30 ? 'text-orange-700' :
                   'text-red-700'
                 }`}>
-                  {dayun?.score || 50}分
+                  {(dayun && dayun.score) || 50}分
                 </span>
               </div>
             </div>

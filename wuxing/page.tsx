@@ -4,11 +4,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { ArrowLeft, TrendingUp, TrendingDown, Circle, RefreshCw } from 'lucide-react';
 
 // 导入类型
-import { Bazi, WuXingAnalysis, WuXingScore, WU_XING_COLORS, WU_XING_GRADIENTS } from '../../types/horoscope';
+import { Bazi, WuXingAnalysis, WuXingScore, WU_XING_COLORS, WU_XING_GRADIENTS } from '@/types/horoscope';
 
 export default function WuXingDisplayPage() {
   const searchParams = useSearchParams();

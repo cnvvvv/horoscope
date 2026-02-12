@@ -243,7 +243,7 @@ export function generateSimpleAnalysis(
   category: QimenCategory,
   scores: any
 ): {
-  level: string;
+  level: '大吉' | '吉' | '平' | '凶' | '大凶';
   advice: string;
   strategy: string;
 } {

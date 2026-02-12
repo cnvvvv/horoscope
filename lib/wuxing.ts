@@ -159,8 +159,7 @@ function analyzeInteractions(bazi: Bazi): {
   六合: string[]
 } {
   const pillars = [bazi.year, bazi.month, bazi.day, bazi.hour];
-
-  return {
+  const interactions = {
     generated: [] as string[],
     克制: [] as string[],
     冲克: [] as string[],
@@ -360,18 +359,4 @@ export function analyzeWuXing(bazi: Bazi): WuXingAnalysis {
   }
 }
 
-// 导出类型和函数
-export type {
-  WuXing,
-  WuXingAnalysis,
-  WuXingScore,
-  WU_XING_INTERACTIONS
-};
 
-export {
-  WuXing,
-  WuXingAnalysis,
-  WuXingScore,
-  WU_XING_INTERACTIONS,
-  analyzeWuXing
-};

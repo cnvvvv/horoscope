@@ -4,12 +4,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { ArrowLeft, Clock, Calendar, Star, Calculator } from 'lucide-react';
 
 // 导入类型
-import { Bazi, BaziPillar, WuxingAnalysis, ShenAnalysis, DaYunCycle } from '../../types/horoscope';
+import { Bazi, BaziPillar, WuXingAnalysis, ShenAnalysis, DaYunCycle } from '@/types/horoscope';
 
 export default function BaziDisplayPage() {
   const searchParams = useSearchParams();
@@ -138,7 +139,7 @@ export default function BaziDisplayPage() {
                   <div>
                     <p className="text-sm text-gray-600">出生信息</p>
                     <p className="text-lg font-semibold text-gray-900">
-                      {bazi.birthType === 'solar' ? '公历' : '农历'} {bazi.birthDate ? bazi.birthDate.toLocaleDateString() : ''}
+                      {bazi?.birthType === 'solar' ? '公历' : '农历'} 年柱: {bazi?.year.heavenlyStem}{bazi?.year.earthlyBranch}
                     </p>
                   </div>
                 </div>
@@ -148,7 +149,7 @@ export default function BaziDisplayPage() {
                   <div>
                     <p className="text-sm text-gray-600">出生时辰</p>
                     <p className="text-lg font-semibold text-gray-900">
-                      {bazi.birthType === 'solar' ? '公历' : '农历'} {bazi.birthDate ? bazi.birthDate.toLocaleTimeString() : ''}
+                      {bazi?.birthType === 'solar' ? '公历' : '农历'} 时辰: {bazi?.hour?.earthlyBranch}
                     </p>
                   </div>
                 </div>
@@ -161,32 +162,40 @@ export default function BaziDisplayPage() {
               
               <div className="grid grid-cols-2 gap-4">
                 {/* 年柱 */}
-                <PillarDisplay
-                  pillar={bazi.year}
-                  label="年柱"
-                  color="bg-blue-50 border-blue-200"
-                />
+                {bazi && (
+                  <PillarDisplay
+                    pillar={bazi.year}
+                    label="年柱"
+                    color="bg-blue-50 border-blue-200"
+                  />
+                )}
                 
                 {/* 月柱 */}
-                <PillarDisplay
-                  pillar={bazi.month}
-                  label="月柱"
-                  color="bg-green-50 border-green-200"
-                />
+                {bazi && (
+                  <PillarDisplay
+                    pillar={bazi.month}
+                    label="月柱"
+                    color="bg-green-50 border-green-200"
+                  />
+                )}
                 
                 {/* 日柱 */}
-                <PillarDisplay
-                  pillar={bazi.day}
-                  label="日柱"
-                  color="bg-purple-50 border-purple-200"
-                />
+                {bazi && (
+                  <PillarDisplay
+                    pillar={bazi.day}
+                    label="日柱"
+                    color="bg-purple-50 border-purple-200"
+                  />
+                )}
                 
                 {/* 时柱 */}
-                <PillarDisplay
-                  pillar={bazi.hour}
-                  label="时柱"
-                  color="bg-orange-50 border-orange-200"
-                />
+                {bazi && (
+                  <PillarDisplay
+                    pillar={bazi.hour}
+                    label="时柱"
+                    color="bg-orange-50 border-orange-200"
+                  />
+                )}
               </div>
             </div>
           </div>

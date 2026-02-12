@@ -226,16 +226,9 @@ export function isTermPassed(year: number, month: number, day: number, termName:
   return currentDate >= termDate;
 }
 
-// 导出函数
-export {
-  STEM_BRANCH_MAP,
-  SOLAR_TERMS,
-  CYCLE,
-  isLeapYear,
-  getSolarTermDate,
-  getLunarMonth,
-  getLunarYear,
-  solarToLunar,
-  getCurrentSolarTerm,
-  isTermPassed
+// 导出其他模块需要的常量
+export { 
+  HEAVENLY_STEMS, 
+  EARTHLY_BRANCHES, 
+  STEM_BRANCH_MAP 
 };

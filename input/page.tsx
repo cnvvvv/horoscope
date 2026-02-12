@@ -5,7 +5,7 @@
 
 import { useState, FormEvent } from 'react';
 import { Calculator, Calendar, Clock, User, ArrowRight } from 'lucide-react';
-import { InputFormData, BaziFormData } from '../../types/horoscope';
+import { InputFormData, BaziFormData } from '@/types/horoscope';
 
 export default function InputFormPage() {
   const [formData, setFormData] = useState<Partial<InputFormData>>({

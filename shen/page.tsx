@@ -4,9 +4,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { ArrowLeft, User, Star, Zap, Shield, TrendingUp, RefreshCw } from 'lucide-react';
-import { ShenAnalysis, ShenType, ShenSystem, SHEN_INFO } from '../../types/horoscope';
+import { ShenAnalysis, ShenType, ShenSystem, SHEN_INFO } from '@/types/horoscope';
 
 export default function ShenDisplayPage() {
   const searchParams = useSearchParams();

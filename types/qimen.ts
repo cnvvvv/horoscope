@@ -271,25 +271,4 @@ export interface QimenStorage {
   lastUpdate: string;
 }
 
-// 导出所有类型
-export type {
-  GongConfig,
-  GongInfo,
-  QimenPan,
-  QimenRequest,
-  YongShen,
-  QimenAnalysis,
-  FortuneScore,
-  RuleCondition,
-  Rule,
-  Ruleset,
-  TextTemplate,
-  QimenGridProps,
-  TermPopupProps,
-  QimenResponse,
-  QimenPaiResponse,
-  QimenAnalyzeResponse,
-  QimenYongShenResponse,
-  QimenConfig,
-  QimenStorage
-};
+
