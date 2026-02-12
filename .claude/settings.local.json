@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npm install)",
       "Bash(npm run build)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\n修复TypeScript类型版本兼容性问题\n\n- 将@types/react降级到v18以匹配React 18\n- 添加@types/react-dom以完善类型定义\n- 调整@types/node版本以提升兼容性\n- 解决Vercel部署时的类型错误\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(vercel:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\n将TypeScript类型定义移至dependencies\n\n- 移动@types/node、@types/react、@types/react-dom到dependencies\n- 解决Vercel构建时devDependencies被删除导致类型定义丢失的问题\n- 确保生产环境构建时类型定义可用\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }
