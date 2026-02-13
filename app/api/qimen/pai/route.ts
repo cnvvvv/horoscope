@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       }, { status: 400 });
     }
 
-    // 排盘
+    // 计算奇门盘
     const qimen = paiQimenPan(yearNum, monthNum, dayNum, hourNum);
 
     if (!qimen) {
