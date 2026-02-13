@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Calculator, Sparkles, Sparkle, TrendingUp, Calendar, Clock, User, Compass, Loader2, Moon, Sun } from 'lucide-react';
+import { Calculator, Sparkles, Sparkle, TrendingUp, Calendar, Clock, User, Compass, Loader2, Moon, Sun, Zap, Cpu, Activity } from 'lucide-react';
 
-type TabType = 'bazi' | 'qimen' | 'bazi-result' | 'qimen-result';
+type TabType = 'bazi' | 'qimen';
+type ResultTab = 'input' | 'result';
 
 interface BaziInput {
   name: string;
@@ -26,7 +27,11 @@ interface QimenInput {
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<TabType>('bazi');
+  const [baziResultTab, setBaziResultTab] = useState<ResultTab>('input');
+  const [qimenResultTab, setQimenResultTab] = useState<ResultTab>('input');
+
   const [isLoading, setIsLoading] = useState(false);
+  const [processingStep, setProcessingStep] = useState(0);
 
   // 八字数据
   const [baziInput, setBaziInput] = useState<BaziInput>({
@@ -55,7 +60,11 @@ export default function HomePage() {
   const handleBaziSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setProcessingStep(1);
     try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setProcessingStep(2);
+
       const birthDate = new Date(baziInput.year, baziInput.month - 1, baziInput.day, baziInput.hour);
       const response = await fetch('/api/bazi', {
         method: 'POST',
@@ -66,15 +75,21 @@ export default function HomePage() {
           calendarType: baziInput.calendarType
         })
       });
+
+      setProcessingStep(3);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       if (!response.ok) throw new Error('八字计算失败');
       const data = await response.json();
       setBaziResult(data);
-      setActiveTab('bazi-result');
+      setBaziResultTab('result');
+      setProcessingStep(4);
     } catch (error) {
       console.error('计算错误:', error);
-      alert('计算失败，请稍后重试');
+      alert('计算失败：' + (error as Error).message);
     } finally {
       setIsLoading(false);
+      setProcessingStep(0);
     }
   };
 
@@ -82,7 +97,11 @@ export default function HomePage() {
   const handleQimenSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setProcessingStep(1);
     try {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      setProcessingStep(2);
+
       const response = await fetch('/api/qimen/pai', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -93,92 +112,158 @@ export default function HomePage() {
           hour: qimenInput.hour
         })
       });
+
+      setProcessingStep(3);
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       if (!response.ok) throw new Error('奇门遁甲计算失败');
       const data = await response.json();
       setQimenResult(data);
-      setActiveTab('qimen-result');
+      setQimenResultTab('result');
+      setProcessingStep(4);
     } catch (error) {
       console.error('计算错误:', error);
-      alert('计算失败，请稍后重试');
+      alert('计算失败：' + (error as Error).message);
     } finally {
       setIsLoading(false);
+      setProcessingStep(0);
     }
   };
 
+  const processingSteps = [
+    '初始化计算引擎...',
+    '加载天文历法数据...',
+    '执行核心算法运算...',
+    '生成分析报告...'
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* 动态背景 */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
+    <div className="min-h-screen bg-[#0a0a0f]">
+      {/* 技术背景网格 */}
+      <div className="fixed inset-0 opacity-20">
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px),linear-gradient(rgba(0,255,255,0.03)_1px,transparent_1px)] bg-[length:20px_20px] bg-[size:20px_20px] animate-grid" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--cyan-glow)_0%,transparent_70%)] opacity-30" />
       </div>
 
+      {/* 顶部装饰线 */}
+      <div className="fixed top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#00ffffcc] to-transparent opacity-30" />
+
       {/* 头部 */}
-      <nav className="relative z-10 container mx-auto px-6 py-6">
-        <div className="flex items-center justify-center space-x-3">
-          <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-2xl shadow-2xl shadow-purple-500/50">
-            <Calculator className="h-8 w-8 text-white" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-              科学算命
-            </h1>
-            <p className="text-sm text-gray-400 mt-1">知命而行 · 顺势而为</p>
+      <nav className="relative z-10 border-b border-white/10 backdrop-blur-xl bg-black/40">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-[#00ffffcc] blur-md rounded-full"></div>
+                <Calculator className="relative h-8 w-8 text-[#00ffffcc]" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-wider">
+                  <span className="text-white">SCI-</span>
+                  <span className="text-[#00ffffcc]">FORTUNE</span>
+                </h1>
+                <p className="text-[#00ff00ff] text-xs tracking-widest mt-1">量子八字命理系统</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-6 text-xs">
+              <span className="text-gray-500 flex items-center">
+                <Activity className="h-3 w-3 mr-1" />
+                系统在线
+              </span>
+              <span className="text-[#00ffffcc]">v2.0.4</span>
+            </div>
           </div>
         </div>
       </nav>
 
       {/* 主要内容 */}
       <main className="relative z-10 container mx-auto px-6 py-8">
-        <div className="max-w-5xl mx-auto">
-          {/* 标签页切换 */}
+        <div className="max-w-6xl mx-auto">
+          {/* Logo区域 */}
+          {!isLoading && baziResultTab === 'input' && qimenResultTab === 'input' && (
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-black/40 border border-[#00ffffcc]/30 rounded-lg">
+                <Zap className="h-5 w-5 text-[#00ffffcc]" />
+                <Cpu className="h-5 w-5 text-[#00ff00ff]" />
+                <div className="h-px w-px bg-[#00ffffcc]"></div>
+              </div>
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-2 tracking-tight">
+                <span className="text-[#00ffffcc]">命</span>
+                <span className="text-[#00ff00ff]">理</span>
+                <span className="text-white">计算</span>
+                <span className="text-[#00ffffcc]">系</span>
+                <span className="text-[#00ff00ff]">统</span>
+              </h1>
+              <p className="text-gray-400 text-sm max-w-2xl mx-auto">
+                基于传统周易与现代计算技术的融合
+              </p>
+            </div>
+          )}
+
+          {/* 标签切换 */}
           <div className="flex justify-center mb-8">
-            <div className="bg-slate-800/50 backdrop-blur-xl p-2 rounded-2xl shadow-2xl border border-slate-700/50">
+            <div className="inline-flex bg-black/60 backdrop-blur-xl rounded-lg p-1 border border-white/10">
               <button
                 onClick={() => setActiveTab('bazi')}
-                className={`px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 ${
-                  activeTab === 'bazi' || activeTab === 'bazi-result'
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50 scale-105'
-                    : 'text-gray-400 hover:text-white hover:bg-slate-700/50'
+                className={`px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ${
+                  activeTab === 'bazi'
+                    ? 'bg-[#00ffffcc] text-black shadow-[0_0_30px_rgba(0,255,255,204,0.3)]'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <Moon className="inline h-5 w-5 mr-2" />
-                八字测算
+                <Moon className="inline h-4 w-4 mr-2" />
+                八字模块
               </button>
               <button
                 onClick={() => setActiveTab('qimen')}
-                className={`px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 ${
-                  activeTab === 'qimen' || activeTab === 'qimen-result'
-                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg shadow-blue-500/50 scale-105'
-                    : 'text-gray-400 hover:text-white hover:bg-slate-700/50'
+                className={`px-6 py-3 text-sm font-semibold rounded-lg transition-all duration-300 ${
+                  activeTab === 'qimen'
+                    ? 'bg-[#00ffffcc] text-black shadow-[0_0_30px_rgba(0,255,255,204,0.3)]'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
-                <Compass className="inline h-5 w-5 mr-2" />
-                奇门决策
+                <Compass className="inline h-4 w-4 mr-2" />
+                奇门遁甲
               </button>
             </div>
           </div>
 
-          {/* 加载状态 */}
+          {/* 加载动画 */}
           {isLoading && (
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl shadow-2xl p-16 text-center border border-slate-700/50">
-              <Loader2 className="h-16 w-16 text-purple-500 animate-spin mx-auto mb-6" />
-              <p className="text-xl text-gray-300">正在计算中...</p>
-              <p className="text-sm text-gray-500 mt-2">请稍候</p>
+            <div className="bg-black/60 backdrop-blur-xl rounded-2xl border border-[#00ffffcc]/30 p-12">
+              <div className="max-w-md mx-auto">
+                <div className="flex justify-center mb-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <Loader2 className="h-12 w-12 text-[#00ffffcc] animate-spin" />
+                      <div className="absolute inset-0 rounded-full bg-[#00ffffcc] opacity-20"></div>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-white text-center mb-2">{processingSteps[processingStep - 1]}</p>
+                <div className="w-full bg-gray-800 rounded-full h-2 overflow-hidden">
+                  <div className="h-full bg-[#00ffffcc] transition-all duration-1000" style={{ width: `${(processingStep / 4) * 100}%` }}></div>
+                </div>
+                <p className="text-gray-500 text-sm text-center mt-2">正在执行复杂运算...</p>
+              </div>
             </div>
           )}
 
           {/* 八字输入表单 */}
-          {!isLoading && activeTab === 'bazi' && (
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-slate-700/50">
-              <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
-                八字测算信息录入
-              </h2>
-              <form onSubmit={handleBaziSubmit} className="space-y-8">
+          {!isLoading && activeTab === 'bazi' && baziResultTab === 'input' && (
+            <div className="bg-black/60 backdrop-blur-xl rounded-2xl border border-white/10 p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-white mb-2 flex items-center">
+                  <Sparkles className="h-6 w-6 mr-3 text-[#00ffffcc]" />
+                  八字信息录入
+                </h2>
+                <p className="text-gray-500 text-sm mb-6">请输入出生信息以启动八字计算引擎</p>
+              </div>
+
+              <form onSubmit={handleBaziSubmit} className="space-y-5">
                 {/* 姓名 */}
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-gray-300 flex items-center">
+                <div>
+                  <label className="text-gray-400 text-sm mb-2 flex items-center">
                     <User className="h-4 w-4 mr-2" />
                     姓名（可选）
                   </label>
@@ -186,22 +271,22 @@ export default function HomePage() {
                     type="text"
                     value={baziInput.name}
                     onChange={(e) => setBaziInput({ ...baziInput, name: e.target.value })}
-                    className="w-full px-6 py-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white placeholder-gray-600 focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 transition-all"
                     placeholder="请输入姓名"
                   />
                 </div>
 
                 {/* 历法类型 */}
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-gray-300 flex items-center">
+                <div>
+                  <label className="text-gray-400 text-sm mb-3 flex items-center">
                     <Calendar className="h-4 w-4 mr-2" />
                     历法类型
                   </label>
                   <div className="grid grid-cols-2 gap-4">
-                    <label className={`flex items-center justify-center px-6 py-4 rounded-xl cursor-pointer transition-all ${
+                    <label className={`flex items-center justify-center px-6 py-4 rounded-lg cursor-pointer transition-all border-2 ${
                       baziInput.calendarType === 'solar'
-                        ? 'bg-purple-600/20 border-2 border-purple-500'
-                        : 'bg-slate-900/50 border border-slate-700 hover:border-slate-600'
+                        ? 'border-[#00ffffcc] bg-[#00ffffcc]/10'
+                        : 'border-white/20 text-gray-400 hover:border-[#00ffffcc]'
                     }`}>
                       <input
                         type="radio"
@@ -210,13 +295,13 @@ export default function HomePage() {
                         onChange={(e) => setBaziInput({ ...baziInput, calendarType: e.target.value as any })}
                         className="sr-only"
                       />
-                      <Sun className="h-5 w-5 mr-3 text-yellow-400" />
-                      <span className="font-medium">公历（阳历）</span>
+                      <Sun className="h-5 w-5 mr-2" />
+                      <span>公历（阳历）</span>
                     </label>
-                    <label className={`flex items-center justify-center px-6 py-4 rounded-xl cursor-pointer transition-all ${
+                    <label className={`flex items-center justify-center px-6 py-4 rounded-lg cursor-pointer transition-all border-2 ${
                       baziInput.calendarType === 'lunar'
-                        ? 'bg-purple-600/20 border-2 border-purple-500'
-                        : 'bg-slate-900/50 border border-slate-700 hover:border-slate-600'
+                        ? 'border-[#00ffffcc] bg-[#00ffffcc]/10'
+                        : 'border-white/20 text-gray-400 hover:border-[#00ffffcc]'
                     }`}>
                       <input
                         type="radio"
@@ -225,17 +310,17 @@ export default function HomePage() {
                         onChange={(e) => setBaziInput({ ...baziInput, calendarType: e.target.value as any })}
                         className="sr-only"
                       />
-                      <Moon className="h-5 w-5 mr-3 text-blue-300" />
-                      <span className="font-medium">农历（阴历）</span>
+                      <Moon className="h-5 w-5 mr-2" />
+                      <span>农历（阴历）</span>
                     </label>
                   </div>
                 </div>
 
-                {/* 出生时间 */}
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-gray-300 flex items-center">
+                {/* 出生日期时间 */}
+                <div>
+                  <label className="text-gray-400 text-sm mb-3 flex items-center">
                     <Clock className="h-4 w-4 mr-2" />
-                    出生时间
+                    出生日期时间
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
@@ -243,7 +328,7 @@ export default function HomePage() {
                       <select
                         value={baziInput.year}
                         onChange={(e) => setBaziInput({ ...baziInput, year: parseInt(e.target.value) })}
-                        className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 appearance-none cursor-pointer"
                       >
                         {Array.from({ length: 211 }, (_, i) => 1900 + i).map(year => (
                           <option key={year} value={year}>{year}</option>
@@ -255,7 +340,7 @@ export default function HomePage() {
                       <select
                         value={baziInput.month}
                         onChange={(e) => setBaziInput({ ...baziInput, month: parseInt(e.target.value) })}
-                        className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 appearance-none cursor-pointer"
                       >
                         {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
                           <option key={month} value={month}>{month}月</option>
@@ -267,7 +352,7 @@ export default function HomePage() {
                       <select
                         value={baziInput.day}
                         onChange={(e) => setBaziInput({ ...baziInput, day: parseInt(e.target.value) })}
-                        className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 appearance-none cursor-pointer"
                       >
                         {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
                           <option key={day} value={day}>{day}日</option>
@@ -279,7 +364,7 @@ export default function HomePage() {
                       <select
                         value={baziInput.hour}
                         onChange={(e) => setBaziInput({ ...baziInput, hour: parseInt(e.target.value) })}
-                        className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 appearance-none cursor-pointer"
                       >
                         {Array.from({ length: 24 }, (_, i) => i).map(hour => (
                           <option key={hour} value={hour}>{hour}时</option>
@@ -290,16 +375,16 @@ export default function HomePage() {
                 </div>
 
                 {/* 性别 */}
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-gray-300 flex items-center">
+                <div>
+                  <label className="text-gray-400 text-sm mb-3 flex items-center">
                     <User className="h-4 w-4 mr-2" />
                     性别
                   </label>
                   <div className="grid grid-cols-2 gap-4">
-                    <label className={`flex items-center justify-center px-6 py-4 rounded-xl cursor-pointer transition-all ${
+                    <label className={`flex items-center justify-center px-6 py-4 rounded-lg cursor-pointer transition-all border-2 ${
                       baziInput.gender === 'male'
-                        ? 'bg-blue-600/20 border-2 border-blue-500'
-                        : 'bg-slate-900/50 border border-slate-700 hover:border-slate-600'
+                        ? 'border-[#00ffffcc] bg-[#00ffffcc]/10'
+                        : 'border-white/20 text-gray-400 hover:border-[#00ffffcc]'
                     }`}>
                       <input
                         type="radio"
@@ -309,12 +394,12 @@ export default function HomePage() {
                         className="sr-only"
                       />
                       <span className="text-2xl mr-2">👨</span>
-                      <span className="font-medium">男</span>
+                      <span>男</span>
                     </label>
-                    <label className={`flex items-center justify-center px-6 py-4 rounded-xl cursor-pointer transition-all ${
+                    <label className={`flex items-center justify-center px-6 py-4 rounded-lg cursor-pointer transition-all border-2 ${
                       baziInput.gender === 'female'
-                        ? 'bg-pink-600/20 border-2 border-pink-500'
-                        : 'bg-slate-900/50 border border-slate-700 hover:border-slate-600'
+                        ? 'border-[#00ffffcc] bg-[#00ffffcc]/10'
+                        : 'border-white/20 text-gray-400 hover:border-[#00ffffcc]'
                     }`}>
                       <input
                         type="radio"
@@ -324,7 +409,7 @@ export default function HomePage() {
                         className="sr-only"
                       />
                       <span className="text-2xl mr-2">👩</span>
-                      <span className="font-medium">女</span>
+                      <span>女</span>
                     </label>
                   </div>
                 </div>
@@ -332,36 +417,77 @@ export default function HomePage() {
                 {/* 提交按钮 */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-5 rounded-xl text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/50 hover:shadow-purple-500/70 hover:scale-105"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-[#00ffffcc] to-[#00ff00ff] text-black py-4 rounded-lg text-lg font-semibold hover:from-[#00ffffdd] hover:to-[#00ff00ff] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(0,255,255,204,0.3)] hover:shadow-[0_0_50px_rgba(0,255,255,204,0.5)]"
                 >
-                  <Sparkles className="inline h-5 w-5 mr-2" />
-                  开始测算
+                  <Sparkle className="inline h-5 w-5 mr-2" />
+                  {isLoading ? '计算中...' : '启动八字计算引擎'}
                 </button>
               </form>
             </div>
           )}
 
-          {/* 八字结果 */}
-          {!isLoading && activeTab === 'bazi-result' && baziResult && (
+          {/* 八字结果展示 */}
+          {!isLoading && activeTab === 'bazi' && baziResultTab === 'result' && baziResult && (
             <div className="space-y-6">
-              <BaziResultDisplay result={baziResult} onReset={() => { setBaziResult(null); setActiveTab('bazi'); }} />
+              <div className="bg-black/60 backdrop-blur-xl rounded-2xl border border-white/10 p-8">
+                <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                  <Sparkles className="h-6 w-6 mr-3 text-[#00ffffcc]" />
+                  八字命理分析报告
+                </h2>
+
+                {/* 四柱八字 */}
+                {baziResult.year && (
+                  <div className="mb-8">
+                    <h3 className="text-lg font-semibold text-[#00ffffcc] mb-4">四柱八字</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {[
+                        { title: '年柱', gan: baziResult.year.heavenlyStem, zhi: baziResult.year.earthlyBranch },
+                        { title: '月柱', gan: baziResult.month.heavenlyStem, zhi: baziResult.month.earthlyBranch },
+                        { title: '日柱', gan: baziResult.day.heavenlyStem, zhi: baziResult.day.earthlyBranch },
+                        { title: '时柱', gan: baziResult.hour.heavenlyStem, zhi: baziResult.hour.earthlyBranch }
+                      ].map((pillar, idx) => (
+                        <div key={idx} className="bg-black/40 border border-white/10 rounded-xl p-4 text-center">
+                          <div className="text-xs text-gray-500 mb-2">{pillar.title}</div>
+                          <div className="bg-black/60 rounded-lg p-3 mb-3 border border-[#00ffffcc]/30">
+                            <div className="text-3xl font-bold text-[#00ffffcc]">{pillar.gan || '-'}</div>
+                            <div className="text-3xl font-bold text-white">{pillar.zhi || '-'}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => { setBaziResult(null); setBaziResultTab('input'); }}
+                className="w-full bg-gradient-to-r from-[#00ffffcc] to-[#00ff00ff] text-black py-4 rounded-lg text-lg font-semibold hover:from-[#00ffffdd] hover:to-[#00ff00ff] transition-all duration-300 shadow-[0_0_30px_rgba(0,255,255,204,0.3)] hover:shadow-[0_0_50px_rgba(0,255,255,204,0.5)]"
+              >
+                返回重新计算
+              </button>
             </div>
           )}
 
           {/* 奇门输入表单 */}
-          {!isLoading && activeTab === 'qimen' && (
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl shadow-2xl p-10 border border-slate-700/50">
-              <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-blue-400 to-cyan-400 text-transparent bg-clip-text">
-                奇门遁甲决策系统
-              </h2>
-              <form onSubmit={handleQimenSubmit} className="space-y-8">
-                {/* 问题类型 */}
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-gray-300">决策类型</label>
+          {!isLoading && activeTab === 'qimen' && qimenResultTab === 'input' && (
+            <div className="bg-black/60 backdrop-blur-xl rounded-2xl border border-white/10 p-8">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-white mb-2 flex items-center">
+                  <Compass className="h-6 w-6 mr-3 text-[#00ffffcc]" />
+                  奇门遁甲决策系统
+                </h2>
+                <p className="text-gray-500 text-sm mb-6">选择决策类型和时间以生成奇门遁甲盘</p>
+              </div>
+
+              <form onSubmit={handleQimenSubmit} className="space-y-5">
+                {/* 决策类型 */}
+                <div>
+                  <label className="text-gray-400 text-sm mb-3">决策类型</label>
                   <select
                     value={qimenInput.questionType}
                     onChange={(e) => setQimenInput({ ...qimenInput, questionType: e.target.value })}
-                    className="w-full px-6 py-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 appearance-none cursor-pointer"
                   >
                     <option value="career">🏢 事业发展</option>
                     <option value="wealth">💰 求财投资</option>
@@ -375,20 +501,20 @@ export default function HomePage() {
                 </div>
 
                 {/* 具体问题 */}
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-gray-300">具体问题（可选）</label>
+                <div>
+                  <label className="text-gray-400 text-sm mb-3">具体问题（可选）</label>
                   <textarea
                     value={qimenInput.question}
                     onChange={(e) => setQimenInput({ ...qimenInput, question: e.target.value })}
-                    className="w-full px-6 py-4 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 transition-all"
+                    className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white placeholder-gray-600 focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 transition-all"
                     rows={4}
                     placeholder="请简要描述您想要决策的问题..."
                   />
                 </div>
 
                 {/* 决策时间 */}
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-gray-300 flex items-center">
+                <div>
+                  <label className="text-gray-400 text-sm mb-3 flex items-center">
                     <Clock className="h-4 w-4 mr-2" />
                     决策时间
                   </label>
@@ -398,7 +524,7 @@ export default function HomePage() {
                       <select
                         value={qimenInput.year}
                         onChange={(e) => setQimenInput({ ...qimenInput, year: parseInt(e.target.value) })}
-                        className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 appearance-none cursor-pointer"
                       >
                         {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 5 + i).map(year => (
                           <option key={year} value={year}>{year}</option>
@@ -410,7 +536,7 @@ export default function HomePage() {
                       <select
                         value={qimenInput.month}
                         onChange={(e) => setQimenInput({ ...qimenInput, month: parseInt(e.target.value) })}
-                        className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 appearance-none cursor-pointer"
                       >
                         {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
                           <option key={month} value={month}>{month}月</option>
@@ -422,7 +548,7 @@ export default function HomePage() {
                       <select
                         value={qimenInput.day}
                         onChange={(e) => setQimenInput({ ...qimenInput, day: parseInt(e.target.value) })}
-                        className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 appearance-none cursor-pointer"
                       >
                         {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
                           <option key={day} value={day}>{day}日</option>
@@ -434,7 +560,7 @@ export default function HomePage() {
                       <select
                         value={qimenInput.hour}
                         onChange={(e) => setQimenInput({ ...qimenInput, hour: parseInt(e.target.value) })}
-                        className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-lg text-white focus:border-[#00ffffcc] focus:ring-2 focus:ring-[#00ffffcc]/20 appearance-none cursor-pointer"
                       >
                         {Array.from({ length: 24 }, (_, i) => i).map(hour => (
                           <option key={hour} value={hour}>{hour}时</option>
@@ -447,211 +573,83 @@ export default function HomePage() {
                 {/* 提交按钮 */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-5 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-blue-500/50 hover:shadow-blue-500/70 hover:scale-105"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-[#00ffffcc] to-[#00ff00ff] text-black py-4 rounded-lg text-lg font-semibold hover:from-[#00ffffdd] hover:to-[#00ff00ff] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(0,255,255,204,0.3)] hover:shadow-[0_0_50px_rgba(0,255,255,204,0.5)]"
                 >
                   <Sparkle className="inline h-5 w-5 mr-2" />
-                  开始起盘决策
+                  {isLoading ? '计算中...' : '启动奇门遁甲决策引擎'}
                 </button>
               </form>
             </div>
           )}
 
-          {/* 奇门结果 */}
-          {!isLoading && activeTab === 'qimen-result' && qimenResult && (
+          {/* 奇门结果展示 */}
+          {!isLoading && activeTab === 'qimen' && qimenResultTab === 'result' && qimenResult && (
             <div className="space-y-6">
-              <QimenResultDisplay result={qimenResult} onReset={() => { setQimenResult(null); setActiveTab('qimen'); }} />
-            </div>
-          )}
+              <div className="bg-black/60 backdrop-blur-xl rounded-2xl border border-white/10 p-8">
+                <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+                  <Compass className="h-6 w-6 mr-3 text-[#00ffffcc]" />
+                  奇门遁甲决策盘
+                </h2>
 
-          {/* 功能特性 */}
-          {!baziResult && !qimenResult && (
-            <div className="grid md:grid-cols-3 gap-6 mt-12">
-              <FeatureCard
-                icon={<TrendingUp />}
-                title="精确计算"
-                description="基于天文历法的严谨八字排盘，支持公历/农历"
-              />
-              <FeatureCard
-                icon={<Sparkles />}
-                title="深度分析"
-                description="完整的五行分析、十神体系、天干地支关系网"
-              />
-              <FeatureCard
-                icon={<Calculator />}
-                title="运势指引"
-                description="大运流年可视化，事业、财运、情感、健康全方位评估"
-              />
+                {/* 盘局信息 */}
+                <div className="grid md:grid-cols-3 gap-4 mb-8">
+                  <div className="bg-black/40 border border-[#00ffffcc]/30 rounded-xl p-6 text-center">
+                    <div className="text-xs text-gray-500 mb-2">局数</div>
+                    <div className="text-4xl font-bold text-[#00ffffcc]">{qimenResult.panJu}局</div>
+                  </div>
+                  <div className="bg-black/40 border border-[#00ffffcc]/30 rounded-xl p-6 text-center">
+                    <div className="text-xs text-gray-500 mb-2">阴遁/阳遁</div>
+                    <div className="text-4xl font-bold text-white">{qimenResult.isYinDun ? '阴遁' : '阳遁'}</div>
+                  </div>
+                  <div className="bg-black/40 border border-[#00ffffcc]/30 rounded-xl p-6 text-center">
+                    <div className="text-xs text-gray-500 mb-2">值符星</div>
+                    <div className="text-4xl font-bold text-[#00ffffcc]">{qimenResult.zhiFu?.xing || '-'}</div>
+                  </div>
+                </div>
+
+                {/* 值使信息 */}
+                {qimenResult.zhiShi && (
+                  <div className="bg-black/40 border border-[#00ffffcc]/30 rounded-xl p-6 text-center">
+                    <div className="text-xs text-gray-500 mb-2">值使门</div>
+                    <div className="text-4xl font-bold text-white">{qimenResult.zhiShi.men || '-'}</div>
+                    <div className="text-sm text-gray-500 mt-1">{qimenResult.zhiShi.gong}宫</div>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => { setQimenResult(null); setQimenResultTab('input'); }}
+                className="w-full bg-gradient-to-r from-[#00ffffcc] to-[#00ff00ff] text-black py-4 rounded-lg text-lg font-semibold hover:from-[#00ffffdd] hover:to-[#00ff00ff] transition-all duration-300 shadow-[0_0_30px_rgba(0,255,255,204,0.3)] hover:shadow-[0_0_50px_rgba(0,255,255,204,0.5)]"
+              >
+                返回重新决策
+              </button>
             </div>
           )}
         </div>
       </main>
 
       {/* 页脚 */}
-      <footer className="relative z-10 bg-slate-900/50 backdrop-blur-xl border-t border-slate-800 py-8 mt-16">
-        <div className="container mx-auto px-6 text-center">
-          <p className="text-gray-400 mb-2">© 2026 科学算命 | 基于传统周易数理模型</p>
-          <p className="text-sm text-gray-500">结果仅供娱乐与文化交流参考，请勿作为生活决策的唯一依据</p>
+      <footer className="relative z-10 border-t border-white/10 bg-black/40">
+        <div className="container mx-auto px-6 py-6">
+          <div className="grid md:grid-cols-3 gap-6 text-center text-sm text-gray-500">
+            <p>© 2026 SCIFORTUNE | 量子八字命理系统</p>
+            <p>基于传统周易数理与现代计算技术</p>
+            <p>结果仅供娱乐与文化交流参考</p>
+          </div>
         </div>
       </footer>
 
       {/* 自定义动画 */}
       <style jsx global>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.95); }
-          100% { transform: translate(0px, 0px) scale(1); }
+        @keyframes grid {
+          0% { background-position: 0% 0%; }
+          100% { background-position: 100% 100%; }
         }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
+        .animate-grid {
+          animation: grid 20s linear infinite;
         }
       `}</style>
-    </div>
-  );
-}
-
-// 八字结果展示组件
-function BaziResultDisplay({ result, onReset }: { result: any; onReset: () => void }) {
-  return (
-    <div className="space-y-6">
-      <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-slate-700/50">
-        <h2 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-purple-400 to-pink-400 text-transparent bg-clip-text">
-          八字命理分析报告
-        </h2>
-
-        {/* 四柱八字 */}
-        {result.siZhu && (
-          <div className="mb-8">
-            <h3 className="text-xl font-bold text-gray-300 mb-4">四柱八字</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <PillarCard title="年柱" gan={result.siZhu.year?.gan} zhi={result.siZhu.year?.zhi} />
-              <PillarCard title="月柱" gan={result.siZhu.month?.gan} zhi={result.siZhu.month?.zhi} />
-              <PillarCard title="日柱" gan={result.siZhu.day?.gan} zhi={result.siZhu.day?.zhi} />
-              <PillarCard title="时柱" gan={result.siZhu.hour?.gan} zhi={result.siZhu.hour?.zhi} />
-            </div>
-          </div>
-        )}
-
-        {/* 五行分析 */}
-        {result.wuXing && (
-          <div>
-            <h3 className="text-xl font-bold text-gray-300 mb-4">五行分析</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <WuXingCard name="木" value={result.wuXing.wood || 0} color="bg-green-500" emoji="🌲" />
-              <WuXingCard name="火" value={result.wuXing.fire || 0} color="bg-red-500" emoji="🔥" />
-              <WuXingCard name="土" value={result.wuXing.earth || 0} color="bg-yellow-600" emoji="🏔" />
-              <WuXingCard name="金" value={result.wuXing.metal || 0} color="bg-gray-400" emoji="⚪" />
-              <WuXingCard name="水" value={result.wuXing.water || 0} color="bg-blue-500" emoji="💧" />
-            </div>
-          </div>
-        )}
-      </div>
-
-      <button
-        onClick={onReset}
-        className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-5 rounded-xl text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg shadow-purple-500/50 hover:scale-105"
-      >
-        重新测算
-      </button>
-    </div>
-  );
-}
-
-// 奇门结果展示组件
-function QimenResultDisplay({ result, onReset }: { result: any; onReset: () => void }) {
-  return (
-    <div className="space-y-6">
-      <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-slate-700/50">
-        <h2 className="text-3xl font-bold text-center mb-6 bg-gradient-to-r from-blue-400 to-cyan-400 text-transparent bg-clip-text">
-          奇门遁甲决策盘
-        </h2>
-
-        {/* 局数信息 */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
-          <div className="bg-blue-500/20 rounded-2xl p-6 text-center border border-blue-500/30">
-            <div className="text-sm text-gray-400 mb-2">局数</div>
-            <div className="text-3xl font-bold text-blue-400">{result.panJu}局</div>
-          </div>
-          <div className="bg-cyan-500/20 rounded-2xl p-6 text-center border border-cyan-500/30">
-            <div className="text-sm text-gray-400 mb-2">阴遁/阳遁</div>
-            <div className="text-3xl font-bold text-cyan-400">{result.isYinDun ? '阴遁' : '阳遁'}</div>
-          </div>
-          <div className="bg-purple-500/20 rounded-2xl p-6 text-center border border-purple-500/30">
-            <div className="text-sm text-gray-400 mb-2">值符</div>
-            <div className="text-2xl font-bold text-purple-400">{result.zhiFu?.xing}</div>
-            <div className="text-sm text-gray-400 mt-1">{result.zhiFu?.gong}</div>
-          </div>
-        </div>
-
-        {/* 值使信息 */}
-        {result.zhiShi && (
-          <div className="bg-pink-500/20 rounded-2xl p-6 text-center border border-pink-500/30 mb-8">
-            <div className="text-sm text-gray-400 mb-2">值使</div>
-            <div className="text-2xl font-bold text-pink-400">{result.zhiShi?.men}</div>
-            <div className="text-sm text-gray-400 mt-1">{result.zhiShi?.gong}</div>
-          </div>
-        )}
-      </div>
-
-      <button
-        onClick={onReset}
-        className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-5 rounded-xl text-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all duration-300 shadow-lg shadow-blue-500/50 hover:scale-105"
-      >
-        重新起盘
-      </button>
-    </div>
-  );
-}
-
-// 柱显示卡片
-function PillarCard({ title, gan, zhi }: { title: string; gan?: string; zhi?: string }) {
-  return (
-    <div className="text-center bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl p-6 border border-purple-500/30">
-      <div className="text-sm text-gray-400 mb-3">{title}</div>
-      <div className="bg-slate-900/50 rounded-xl p-4 mb-3 border border-slate-700">
-        <div className="text-3xl font-bold text-purple-400">{gan || '-'}</div>
-        <div className="text-3xl font-bold text-pink-400">{zhi || '-'}</div>
-      </div>
-    </div>
-  );
-}
-
-// 五行卡片
-function WuXingCard({ name, value, color, emoji }: { name: string; value: number; color: string; emoji: string }) {
-  const percentage = Math.min(value * 10, 100);
-  return (
-    <div className="text-center bg-slate-900/50 rounded-2xl p-6 border border-slate-700">
-      <div className="text-4xl mb-3">{emoji}</div>
-      <div className="text-lg font-bold text-gray-300 mb-3">{name}</div>
-      <div className="bg-slate-800 rounded-full h-3 overflow-hidden mb-3">
-        <div className={`${color} h-full transition-all duration-500`} style={{ width: `${percentage}%` }} />
-      </div>
-      <div className="text-sm text-gray-400">{value}</div>
-    </div>
-  );
-}
-
-// 功能卡片组件
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl p-8 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 hover:scale-105 group">
-      <div className="flex flex-col items-center text-center h-full">
-        <div className="text-purple-400 mb-6 group-hover:scale-110 transition-transform duration-300">
-          {icon}
-        </div>
-        <h3 className="text-2xl font-bold text-gray-200 mb-3">
-          {title}
-        </h3>
-        <p className="text-gray-400 leading-relaxed">
-          {description}
-        </p>
-      </div>
     </div>
   );
 }

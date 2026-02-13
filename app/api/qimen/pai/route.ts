@@ -1,20 +1,15 @@
-'use dynamic';
-// 📡 奇门遁甲排盘API接口
-// GET /api/qimen/pai?year=2024&month=1&day=1&hour=0
+'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { paiQimenPan } from '@/lib/qimen-pai';
+import { paiQimenPan } from '../../../lib/qimen-pai';
 
-export async function GET(req: NextRequest) {
+export async function POST(req: NextRequest) {
   try {
-    const searchParams = req.nextUrl.searchParams;
-    const year = searchParams.get('year');
-    const month = searchParams.get('month');
-    const day = searchParams.get('day');
-    const hour = searchParams.get('hour');
+    const body = await req.json();
+    const { year, month, day, hour } = body;
 
     // 验证必需参数
-    if (!year || !month || !day || !hour) {
+    if (!year || !month || !day || hour === undefined) {
       return NextResponse.json({
         success: false,
         error: 'Missing required parameters: year, month, day, hour'
@@ -55,15 +50,22 @@ export async function GET(req: NextRequest) {
     }
 
     // 排盘
-    const pan = paiQimenPan(yearNum, monthNum, dayNum, hourNum);
+    const qimen = paiQimenPan(yearNum, monthNum, dayNum, hourNum);
+
+    if (!qimen) {
+      return NextResponse.json({
+        success: false,
+        error: 'Failed to calculate qimen'
+      }, { status: 500 });
+    }
 
     return NextResponse.json({
       success: true,
-      pan,
+      data: qimen,
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Qimen pai error:', error);
+    console.error('奇门遁甲计算错误:', error);
     return NextResponse.json({
       success: false,
       error: 'Internal server error',
