@@ -3,7 +3,7 @@
 
 import {
   QimenPan, GongInfo, JiuGong, JiuXing, BaMen, BaShen, TianGan
-} from '../../types/qimen';
+} from '../types/qimen';
 import {
   cycleIndex, isLucky,
   JIU_GONG_SEQUENCE, JIU_XING_SEQUENCE, BA_MEN_SEQUENCE, BA_SHEN_SEQUENCE

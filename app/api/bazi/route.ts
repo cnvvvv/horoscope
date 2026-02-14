@@ -91,9 +91,9 @@ function calculateWuXing(bazi: any): any {
 
   // 计算五行强弱
   const total = stems.length;
-  const percentages: any = {};
+  const percentages: Record<string, number> = {};
   elements.forEach(element => {
-    percentages[element] = Math.round((counts[element] || 0) / total * 10) / 10;
+    percentages[element] = Math.round((counts[element as keyof typeof counts] || 0) / total * 10) / 10;
   });
 
   return {

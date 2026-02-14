@@ -1,7 +1,7 @@
 'use server';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { paiQimenPan } from '../../../lib/qimen-pai';
+import { paiQimenPan } from '@/lib/qimen-pai';
 
 export async function POST(req: NextRequest) {
   try {
